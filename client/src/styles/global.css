@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles */
+body {
+  @apply bg-gray-100 text-gray-900;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-200;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-blue-500 rounded;
+}
+
+/* Additional global styles */
+.btn {
+  @apply px-4 py-2 rounded transition duration-300;
+}
+
+.card {
+  @apply bg-white shadow-md rounded-lg p-6;
+}

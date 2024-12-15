@@ -1,0 +1,20 @@
+/* Candidate-specific styles */
+.candidate-dashboard {
+    @apply bg-blue-50;
+  }
+  
+  .application-card {
+    @apply border border-blue-200 hover:shadow-md transition duration-300;
+  }
+  
+  .status-badge {
+    @apply px-2 py-1 rounded text-sm font-semibold;
+  }
+  
+  .status-badge-pending {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  
+  .status-badge-approved {
+    @apply bg-green-100 text-green-800;
+  }

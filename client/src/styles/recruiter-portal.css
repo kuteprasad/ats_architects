@@ -1,0 +1,16 @@
+/* Recruiter-specific styles */
+.recruiter-dashboard {
+    @apply bg-gray-50;
+  }
+  
+  .job-posting-card {
+    @apply border border-gray-200 hover:shadow-md transition duration-300;
+  }
+  
+  .candidate-pipeline {
+    @apply flex space-x-4 overflow-x-auto;
+  }
+  
+  .pipeline-column {
+    @apply min-w-[250px] bg-white shadow-md rounded-lg p-4;
+  }

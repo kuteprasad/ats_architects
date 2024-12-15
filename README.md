@@ -108,8 +108,7 @@ We welcome contributions to improve this project! 🛠️
 ---
 
 ## **📧 Contact**
-If you have any questions or suggestions, feel free to reach out:  
-- **Email**: prasadkute0708@gmail.com  
+If you have any questions or suggestions, feel free to reach out:    
 - **LinkedIn**: [Prasad's LinkedIn](https://www.linkedin.com/in/kuteprasad)  
 
 ---

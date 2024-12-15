@@ -1,0 +1,29 @@
+{
+  "name": "ats_architects",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server":"cd server && npm i && npm run dev",
+    "client":"cd client && npm i && npm run dev",
+    "fastapi": "cd fastApi && .\\venv\\Scripts\\activate && fastapi dev main.py",
+    "dev" : "concurrently -k \"npm run server\" \"npm run client\" \"npm run fastapi\"",
+
+    "fastapi-mac":"cd fastapi && source .venv/bin/activate && fastapi dev main.py",
+    "devm": "concurrently -k \"npm run server\" \"npm run client\" \"npm run fastapi-mac\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuteprasad/ats_architects.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kuteprasad/ats_architects/issues"
+  },
+  "homepage": "https://github.com/kuteprasad/ats_architects#readme",
+  "dependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

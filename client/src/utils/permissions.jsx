@@ -1,6 +1,6 @@
 export const ROLES = {
-    CANDIDATE: 'candidate',
-    RECRUITER: 'recruiter',
+    INTERVIEWER: 'interviewer',
+    HR: 'HR',
     ADMIN: 'admin'
   };
   
@@ -9,13 +9,13 @@ export const ROLES = {
   };
   
   export const permissionMap = {
-    [ROLES.CANDIDATE]: [
+    [ROLES.HR]: [
       'view_profile',
       'update_profile',
       'apply_job',
       'view_applications'
     ],
-    [ROLES.RECRUITER]: [
+    [ROLES.INTERVIEWER]: [
       'create_job',
       'view_candidates',
       'manage_applications',

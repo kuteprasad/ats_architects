@@ -21,7 +21,7 @@ export const register = async (req, res) => {
 
     // Create a new user
     const insertUserQuery = `
-      INSERT INTO users (first_name, last_name, email, password, role)
+      INSERT INTO users (firstName, lastName, email, password, role)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;

@@ -7,7 +7,7 @@ import RecruiterDashboard from '../portals/recruiter/pages/Dashboard';
 const RecruiterRoutes = () => {
   return (
     <Routes>
-      <Route element={<PrivateRoute allowedRoles={[ROLES.RECRUITER]} />}>
+      <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN]} />}>
         <Route path="dashboard" element={<RecruiterDashboard />} />
         {/* Add more recruiter-specific routes */}
       </Route>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import { register } from '../../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,8 @@ const RegistrationForm = () => {
     confirmPassword: '',
     role: 'admin'
   });
+
+  const navigate = useNavigate();
 
   const [error, setError] = useState('');
   // const navigate = useNavigate();
@@ -36,8 +39,10 @@ const RegistrationForm = () => {
     try {
       console.log("formdata:  ", formData);
       await register(formData);
-      console.log("go to dashboard : ");
+      console.log("go to login : ");
+      navigate('/login');
       // Redirect to login or dashboard
+      
     } catch (err) {
       setError(err.message || 'Registration failed');
     }

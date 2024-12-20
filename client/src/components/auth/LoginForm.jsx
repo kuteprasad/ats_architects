@@ -62,6 +62,14 @@ const LoginForm = () => {
             Register
           </Button>
         </div>
+        
+        <div>
+          <Button onClick={()=> { navigate('/candidate/careers')}} className="w-full">
+            Go to Careers Page
+          </Button>
+        </div>
+
+        
       </div>
     </div>
   );

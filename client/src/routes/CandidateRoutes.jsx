@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import CareersPage from '../portals/candidate/pages/CareersPage';
+import ApplicationPage from '../portals/candidate/pages/ApplicationPage';
 
 
 const CandidateRoutes = () => {
@@ -9,7 +10,6 @@ const CandidateRoutes = () => {
       <Route >
         <Route path="careers" element={<CareersPage />} />
         <Route path="jobs/:jobId" element={<ApplicationPage />} />
-  
       </Route>
     </Routes>
   );

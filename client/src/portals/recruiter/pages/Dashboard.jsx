@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Button } from '../../../components/Button';
+import Button from '../../../components/common/Button';
+import { useNavigate } from 'react-router-dom';
 
 const RecruiterDashboard = () => {
+  const navigate = useNavigate();
   const handleCreateJob = () => {
+
+    navigate('/recruiter/createposting');
     // TODO: Navigate to job creation page
     console.log('Create job clicked');
   };
@@ -30,10 +34,6 @@ const RecruiterDashboard = () => {
         </div>
         <div className="bg-white p-4 rounded shadow">
           <h2 className="text-xl font-semibold mb-4">Recent Applications</h2>
-          {/* Recent job applications */}
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-semibold mb-4">Create Job Posting</h2>
           {/* Recent job applications */}
         </div>
       </div>

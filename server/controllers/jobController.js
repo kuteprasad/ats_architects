@@ -29,7 +29,7 @@ export const createJob = async (req, res) => {
         postingDate,
         applicationEndDate,
         jobRequirements
-      ) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)
+      ) VALUES ($1, $2, $3, $4, $5, CURRENT_DATE, $6, $7)
       RETURNING *
     `;
 

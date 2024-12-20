@@ -3,10 +3,11 @@ import jwt from 'jsonwebtoken';
 
 import { authService } from '../services/authService.js';
 import  Candidate  from '../models/candidate.js';
+import Recruiter from '../models/recruiter.js'
 
 // Registration controller
 export const register = async (req, res) => {
-  const { firstName, lastName, email, password, phoneNumber } = req.body;
+  const { firstName, lastName, email, password, phoneNumber, role } = req.body;
   console.log("body: ", req.body);
 
   try {
@@ -19,14 +20,26 @@ export const register = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    if(role === 'candidate'){
+      const newUser = await Candidate.create({
+        First_Name: firstName,
+        Last_Name: lastName,
+        Email: email,
+        Phone_Number: phoneNumber,
+        Password: hashedPassword
+      });
+    }
+    else{
+      const newUser = await Recruiter.create({
+        First_Name: firstName,
+        Last_Name: lastName,
+        Email: email,
+        Phone_Number: phoneNumber,
+        Password: hashedPassword,
+      });
+    }
+
     // Create a new user
-    const newUser = await Candidate.create({
-      First_Name: firstName,
-      Last_Name: lastName,
-      Email: email,
-      Phone_Number: phoneNumber,
-      Password: hashedPassword,
-    });
 
     // Generate JWT token
     const token = authService.generateToken(newUser);
@@ -59,7 +72,8 @@ export const login = async (req, res) => {
     const token = authService.generateToken(user);
 
     return res.status(200).json({ message: 'Login successful', token, user });
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Internal server error' });
   }

@@ -2,17 +2,20 @@ import React, { useState } from 'react';
 import Button from '../../../components/common/Button';
 import Input from '../../../components/common/Input';
 import { useNavigate } from 'react-router-dom';
+import api from '../../../services/api';
 
 const CreatePosting = () => {
-  const [postData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     jobTitle: '',
-    location: '',
     jobDescription: '',
-    jobRequirements: '',
-    salary: '',
-    endDate: ''
-  })
+    location: '',
+    salaryRange: '',
+    jobPosition: '',
+    applicationEndDate: '',
+    jobRequirements: ''
+  });
 
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
@@ -24,33 +27,47 @@ const CreatePosting = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Add code to send jobPosting to the server or API
+    setLoading(true);
+    setError('');
+  
     try {
-          console.log("Job Posting Data:  ", postData);
-          
-        } catch (err) {
-          setError(err.message || 'Error while creating Post');
-        }
+      const response = await api.post('/jobs', formData);
+      console.log('Job posting created:', response.data);
+      setLoading(false);
+      navigate('/recruiter/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error creating job posting');
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="max-w-md w-full space-y-8">
+      <div>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Create Job Posting
+        </h2>
+      </div>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <Input
             label="Job Title"
             name="jobTitle"
-            value={postData.jobTitle}
+            value={formData.jobTitle}
             onChange={handleChange}
             required
           />
           <Input
             label="Job Description"
             name="jobDescription"
-            value={postData.jobDescription}
+            value={formData.jobDescription}
             onChange={handleChange}
             required
             isTextArea
@@ -58,7 +75,7 @@ const CreatePosting = () => {
           <Input
             label="Job Requirements"
             name="jobRequirements"
-            value={postData.jobRequirements}
+            value={formData.jobRequirements}
             onChange={handleChange}
             required
             isTextArea
@@ -66,7 +83,7 @@ const CreatePosting = () => {
           <Input
             label="Location"
             name="location"
-            value={postData.location}
+            value={formData.location}
             onChange={handleChange}
             required
             isTextArea
@@ -74,21 +91,35 @@ const CreatePosting = () => {
           <Input
             label="Application End Date"
             type="date"
-            name="endDate"
-            value={postData.endDate}
+            name="applicationEndDate"
+            value={formData.applicationEndDate}
             onChange={handleChange}
             required
           />
           <Input
-            label="Salary"
-            name="salary"
-            value={postData.salary}
+            label="Salary Range"
+            name="salaryRange"
+            value={formData.salaryRange}
             onChange={handleChange}
             required
           />
-          <Button type="submit" className="w-full">
-             Create Post
-           </Button>
+          <Input
+            label="Job Position"
+            name="jobPosition"
+            value={formData.jobPosition}
+            onChange={handleChange}
+            required
+          />
+          <div>
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full"
+            variant="primary"
+          >
+            {loading ? 'Creating...' : 'Create Job Posting'}
+          </Button>
+        </div>
         </form>
       </div>
     </div>

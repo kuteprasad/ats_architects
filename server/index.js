@@ -1,8 +1,9 @@
-import express from 'express';
+import express, { application } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
+import applicationRoutes from './routes/applicationRoutes.js';
 import bodyParser from 'body-parser';
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use(express.json());
 // Routes
 app.use('/auth', authRoutes);
 app.use('/jobs', jobRoutes);
+app.use('/applications', applicationRoutes);
 
 // Server listen
 app.listen(port, () => {

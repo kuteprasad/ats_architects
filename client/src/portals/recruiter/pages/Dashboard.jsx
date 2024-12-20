@@ -17,7 +17,7 @@ const RecruiterDashboard = () => {
   const fetchJobPostings = async () => {
     try {
       const response = await api.get('/jobs');
-      setJobPostings(response.data);
+      setJobPostings(response.data.jobs);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching jobs:', error);

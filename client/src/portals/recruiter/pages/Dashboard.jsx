@@ -17,6 +17,10 @@ const RecruiterDashboard = () => {
           <h2 className="text-xl font-semibold mb-4">Recent Applications</h2>
           {/* Recent job applications */}
         </div>
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="text-xl font-semibold mb-4">Create Job Posting</h2>
+          {/* Recent job applications */}
+        </div>
       </div>
     </div>
   );

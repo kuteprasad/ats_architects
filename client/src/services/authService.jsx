@@ -3,6 +3,8 @@ import api from './api';
 export const login = async (email, password) => {
   try {
     // return true;
+    console.log("email & passowrd recieived:  ", email, password);
+    
     const response = await api.post('/auth/login', { email, password });
     
     // Store token and user info
@@ -19,6 +21,7 @@ export const register = async (userData) => {
   try {
     const response = await api.post('/auth/register', userData);
     return response.data;
+
   } catch (error) {
     throw error.response ? error.response.data : new Error('Registration failed');
   }

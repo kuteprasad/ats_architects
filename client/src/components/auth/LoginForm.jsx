@@ -15,12 +15,15 @@ const LoginForm = () => {
     try {
       const response = await login(email, password);
       
+      console.log("response in loginform: ", response);
+      navigate('/recruiter/dashboard');
+
       // Redirect based on user role
-      if (response.role === 'candidate') {
-        navigate('/candidate/dashboard');
-      } else if (response.role === 'recruiter') {
-        navigate('/recruiter/dashboard');
-      }
+      // if (response.role === 'candidate') {
+      //   navigate('/candidate/dashboard');
+      // } else if (response.role === 'recruiter') {
+      //   navigate('/recruiter/dashboard');
+      // }
     } catch (err) {
       setError('Invalid credentials');
     }

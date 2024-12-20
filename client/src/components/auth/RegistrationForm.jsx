@@ -8,11 +8,11 @@ const RegistrationForm = () => {
     firstName: '',
     lastName: '',
     email: '',
-    
     password: '',
     confirmPassword: '',
-    role: 'candidate'
+    role: 'admin'
   });
+
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -33,7 +33,9 @@ const RegistrationForm = () => {
     }
 
     try {
+      console.log("formdata:  ", formData);
       await register(formData);
+      console.log("go to dashboard : ");
       // Redirect to login or dashboard
     } catch (err) {
       setError(err.message || 'Registration failed');
@@ -92,8 +94,9 @@ const RegistrationForm = () => {
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             >
-              <option value="candidate">Candidate</option>
-              <option value="recruiter">Recruiter</option>
+              <option value="admin">Admin</option>
+              <option value="interviewer">Interviewer</option>
+              <option value="HR">HR</option>
             </select>
           </div>
           {error && <p className="text-red-500">{error}</p>}

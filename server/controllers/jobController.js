@@ -102,3 +102,5 @@ export const fetchJobs = async (req, res) => {
     });
   }
 };
+
+// module.exports = { fetchJobs, createJob };

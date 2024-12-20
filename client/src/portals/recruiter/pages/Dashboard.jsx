@@ -33,7 +33,10 @@ const RecruiterDashboard = () => {
   };
 
   const handleCreateJob = () => {
-    // navigate('/recruiter/create-job');
+
+    navigate('/recruiter/createposting');
+    // TODO: Navigate to job creation page
+    console.log('Create job clicked');
   };
 
   return (

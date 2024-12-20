@@ -4,12 +4,14 @@ export const login = async (email, password) => {
   try {
     // return true;
     console.log("email & passowrd recieived:  ", email, password);
-    
+
     const response = await api.post('/auth/login', { email, password });
     
     // Store token and user info
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
+
+    console.log("response in authservice: ", response.data);
     
     return response.data;
   } catch (error) {

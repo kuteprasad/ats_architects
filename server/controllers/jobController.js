@@ -1,6 +1,6 @@
 import pool from '../config/db.js';
 
-export const createJob = async (req, res) => {
+const createJob = async (req, res) => {
   try {
     const {
       jobTitle,
@@ -61,3 +61,5 @@ export const createJob = async (req, res) => {
     });
   }
 };
+
+export default createJob;

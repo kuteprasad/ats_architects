@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import api from '../../../services/api';
-import Button from '../../../components/common/Button';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import api from "../../../services/api";
+import Button from "../../../components/common/Button";
 
 const ApplicationsPage = () => {
   const { jobId } = useParams();
@@ -11,54 +11,62 @@ const ApplicationsPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const fetchApplications = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/applications/${jobId}`);
+        if (isMounted) {
+          setApplications(response.data.applications);
+          setError(null);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setError(error.response?.data?.message || "Failed to fetch applications");
+          setApplications([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     fetchApplications();
+
+    return () => {
+      isMounted = false;
+    };
   }, [jobId]);
 
-  const fetchApplications = async () => {
-    try {
-      const response = await api.get(`/applications/${jobId}`);
-      setApplications(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching applications:', error);
-      setError('Failed to fetch applications');
-      setLoading(false);
-    }
-  };
-
-  const handleViewResume = async (applicationId) => {
-    try {
-      const response = await api.get(`/applications/${applicationId}/resume`);
-      window.open(response.data.resumeUrl, '_blank');
-    } catch (error) {
-      console.error('Error fetching resume:', error);
-    }
-  };
-
   const toggleCandidateSelection = (applicationId) => {
-    setSelectedCandidates(prev => ({
+    setSelectedCandidates((prev) => ({
       ...prev,
-      [applicationId]: !prev[applicationId]
+      [applicationId]: !prev[applicationId],
     }));
   };
 
   const handleSendInterviewInvites = async () => {
-    const selectedIds = Object.keys(selectedCandidates).filter(id => selectedCandidates[id]);
+    const selectedIds = Object.keys(selectedCandidates).filter(
+      (id) => selectedCandidates[id]
+    );
     try {
-      await api.post('/applications/send-invites', {
+      await api.post("/applications/send-invites", {
         applicationIds: selectedIds,
-        jobId
+        jobId,
       });
-      alert('Interview invites sent successfully!');
+      alert("Interview invites sent successfully!");
     } catch (error) {
-      console.error('Error sending invites:', error);
-      alert('Failed to send interview invites');
+      console.error("Error sending invites:", error);
+      alert("Failed to send interview invites");
     }
   };
 
-  const selectedCount = Object.values(selectedCandidates).filter(Boolean).length;
+  const selectedCount =
+    Object.values(selectedCandidates).filter(Boolean).length;
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading) return <div className="p-6">Loading applications...</div>;
   if (error) return <div className="p-6 text-red-500">{error}</div>;
 
   return (
@@ -76,7 +84,7 @@ const ApplicationsPage = () => {
           </Button>
         </div>
       </div>
-      
+
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -85,13 +93,16 @@ const ApplicationsPage = () => {
                 Select
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Name
+                Candidate Name
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Email
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Ranking Score
+                Application Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Resume Score
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Resume
@@ -104,27 +115,45 @@ const ApplicationsPage = () => {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input
                     type="checkbox"
-                    checked={selectedCandidates[application.applicationId] || false}
-                    onChange={() => toggleCandidateSelection(application.applicationId)}
+                    checked={
+                      selectedCandidates[application.applicationId] || false
+                    }
+                    onChange={() =>
+                      toggleCandidateSelection(application.applicationId)
+                    }
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
-                    {application.firstName} {application.lastName}
+                    {application.candidateName}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{application.email}</div>
+                  <div className="text-sm text-gray-500">
+                    {application.email}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-500">
+                    {new Date(application.applicationDate).toLocaleDateString()}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
-                    {application.rankingScore}
+                    {application.resumeScore}
                   </div>
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Button
-                    onClick={() => handleViewResume(application.applicationId)}
+                    onClick={() => {
+                      const blob = new Blob([application.resume], {
+                        type: "application/pdf",
+                      });
+                      const url = window.URL.createObjectURL(blob);
+                      window.open(url);
+                    }}
                     variant="secondary"
                     size="sm"
                   >

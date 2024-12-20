@@ -61,3 +61,44 @@ export const createJob = async (req, res) => {
     });
   }
 };
+
+export const fetchJobs = async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+        jobPostingId,
+        jobTitle,
+        jobDescription,
+        location,
+        salaryRange,
+        jobPosition,
+        postingDate,
+        applicationEndDate,
+        jobRequirements
+      FROM jobPostings
+      ORDER BY postingDate DESC
+    `;
+
+    const result = await pool.query(query);
+
+    // Format dates and return jobs
+    const formattedJobs = result.rows.map(job => ({
+      ...job,
+      postingDate: job.postingDate.toISOString(),
+      applicationEndDate: job.applicationEndDate
+    }));
+
+    res.status(200).json({
+      success: true,
+      jobs: formattedJobs
+    });
+
+  } catch (error) {
+    console.error('Error in fetchJobs:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch job postings',
+      error: error.message
+    });
+  }
+};

@@ -7,9 +7,9 @@ const JobPosting = sequelize.define('job_posting', {
   Job_Description: { type: DataTypes.TEXT, allowNull: false },
   Location: { type: DataTypes.STRING, allowNull: false },
   Salary_Range: { type: DataTypes.STRING, allowNull: true },
-  Job_Type: { type: DataTypes.STRING, allowNull: false },
+  JobPosition: { type: DataTypes.STRING, allowNull: false },
   Posting_Date: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-  Status: { type: DataTypes.STRING, allowNull: false },
+  applicationEndDate: { type: DataTypes.STRING, allowNull: false },
   Job_Requirements: { type: DataTypes.TEXT, allowNull: false },
 });
 

@@ -11,7 +11,7 @@ const RegistrationForm = () => {
     
     password: '',
     confirmPassword: '',
-    role: 'candidate'
+    role: ''
   });
   const [error, setError] = useState('');
   // const navigate = useNavigate();
@@ -35,7 +35,6 @@ const RegistrationForm = () => {
 
     try {
       await register(formData);
-      // navigate("./login");
       // Redirect to login or dashboard
     } catch (err) {
       setError(err.message || 'Registration failed');

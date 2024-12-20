@@ -1,12 +1,16 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
+import { DataTypes } from "sequelize";
+import sequelize from "../config/db.js";
 
-const Candidate = sequelize.define('candidate', {
-  Candidate_ID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  First_Name: { type: DataTypes.STRING, allowNull: false },
-  Last_Name: { type: DataTypes.STRING, allowNull: false },
-  Email: { type: DataTypes.STRING, unique: true, allowNull: false },
-  Phone_Number: { type: DataTypes.STRING, allowNull: false },
+const Candidate = sequelize.define("candidate", {
+  candidate_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  first_name: { type: DataTypes.STRING, allowNull: false },
+  last_name: { type: DataTypes.STRING, allowNull: false },
+  email: { type: DataTypes.STRING, unique: true, allowNull: false },
+  phone_number: { type: DataTypes.STRING, allowNull: false }
 });
 
 

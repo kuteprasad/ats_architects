@@ -48,47 +48,82 @@ export const getApplicationsByJobId = async (req, res) => {
 export const createApplication = async (req, res) => {
   try {
     const { jobId } = req.params;
-    const { candidateId, resume } = req.body;
+    const { firstName, lastName, email, phoneNumber } = req.body;
+    const resume = req.files?.resume;
 
-    if (!candidateId || !resume) {
+    if (!firstName || !lastName || !email || !phoneNumber || !resume) {
       return res.status(400).json({
         success: false,
-        message: 'Candidate ID and resume are required'
+        message: 'All fields and resume are required'
       });
     }
 
-    const query = `
+    // Check if candidate exists
+    const checkCandidateQuery = `
+      SELECT candidateId 
+      FROM candidates 
+      WHERE email = $1
+    `;
+    
+    let candidateResult = await pool.query(checkCandidateQuery, [email]);
+    let candidateId;
+
+    if (candidateResult.rows.length > 0) {
+      // Use existing candidate
+      candidateId = candidateResult.rows[0].candidateId;
+    } else {
+      // Create new candidate
+      const createCandidateQuery = `
+        INSERT INTO candidates (
+          firstName, 
+          lastName, 
+          email, 
+          phoneNumber
+        )
+        VALUES ($1, $2, $3, $4)
+        RETURNING candidateId
+      `;
+
+      candidateResult = await pool.query(createCandidateQuery, [
+        firstName,
+        lastName,
+        email,
+        phoneNumber
+      ]);
+      candidateId = candidateResult.rows[0].candidateId;
+    }
+
+    // Create application
+    const applicationQuery = `
       INSERT INTO applications (
-        jobPostingId, 
-        candidateId, 
+        jobPostingId,
+        candidateId,
         applicationDate,
         applicationStatus,
         resume,
-        resumeScore,
-        interviewSchedule
+        resumeScore
       )
-      VALUES (
-        $1, $2, 
-        CURRENT_TIMESTAMP, 
-        'PENDING',
-        $3,
-        NULL,
-        NULL
-      )
+      VALUES ($1, $2, CURRENT_TIMESTAMP, 'PENDING', $3, NULL)
       RETURNING *
     `;
 
-    const result = await pool.query(query, [jobId, candidateId, resume]);
+    const resumeBuffer = resume.data;
+    const applicationResult = await pool.query(applicationQuery, [
+      jobId,
+      candidateId,
+      resumeBuffer
+    ]);
 
     res.status(201).json({
       success: true,
+      message: 'Application submitted successfully',
       application: {
-        applicationId: result.rows[0].applicationId,
-        jobPostingId: result.rows[0].jobPostingId,
-        candidateId: result.rows[0].candidateId,
-        applicationDate: result.rows[0].applicationDate,
-        applicationStatus: result.rows[0].applicationStatus,
-        resumeScore: result.rows[0].resumeScore
+        applicationId: applicationResult.rows[0].applicationId,
+        jobPostingId: applicationResult.rows[0].jobPostingId,
+        candidateId: applicationResult.rows[0].candidateId,
+        applicationDate: applicationResult.rows[0].applicationDate,
+        applicationStatus: applicationResult.rows[0].applicationStatus,
+        resumeScore: applicationResult.rows[0].resumeScore
       }
     });
 
@@ -96,7 +131,7 @@ export const createApplication = async (req, res) => {
     console.error('Error in createApplication:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to create application',
+      message: 'Failed to submit application',
       error: error.message
     });
   }

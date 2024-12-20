@@ -50,17 +50,46 @@ export const createApplication = async (req, res) => {
     const { jobId } = req.params;
     const { candidateId, resume } = req.body;
 
+    if (!candidateId || !resume) {
+      return res.status(400).json({
+        success: false,
+        message: 'Candidate ID and resume are required'
+      });
+    }
+
     const query = `
-      INSERT INTO applications (jobPostingId, candidateId, resume)
-      VALUES ($1, $2, $3)
-      RETURNING applicationId
+      INSERT INTO applications (
+        jobPostingId, 
+        candidateId, 
+        applicationDate,
+        applicationStatus,
+        resume,
+        resumeScore,
+        interviewSchedule
+      )
+      VALUES (
+        $1, $2, 
+        CURRENT_TIMESTAMP, 
+        'PENDING',
+        $3,
+        NULL,
+        NULL
+      )
+      RETURNING *
     `;
 
     const result = await pool.query(query, [jobId, candidateId, resume]);
 
     res.status(201).json({
       success: true,
-      applicationId: result.rows[0].applicationId
+      application: {
+        applicationId: result.rows[0].applicationId,
+        jobPostingId: result.rows[0].jobPostingId,
+        candidateId: result.rows[0].candidateId,
+        applicationDate: result.rows[0].applicationDate,
+        applicationStatus: result.rows[0].applicationStatus,
+        resumeScore: result.rows[0].resumeScore
+      }
     });
 
   } catch (error) {

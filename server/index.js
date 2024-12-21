@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
+import interviewRoutes from "./routes/interviewRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import bodyParser from "body-parser";
 import seedRoutes from "./routes/seedRoutes.js";
@@ -28,6 +29,7 @@ app.use(express.json());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/jobs", jobRoutes);
+app.use("/interviews", interviewRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/seedDatabase", seedRoutes);
 

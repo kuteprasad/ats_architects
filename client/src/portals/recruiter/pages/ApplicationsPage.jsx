@@ -18,8 +18,8 @@ const ApplicationsPage = () => {
       start: "",
       end: "",
     },
-    minScore: "",
-    maxScore: "",
+    minScore: "0",
+    maxScore: "100",
     limit: "",
   });
 

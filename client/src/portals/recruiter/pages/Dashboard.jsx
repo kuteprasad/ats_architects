@@ -79,6 +79,7 @@ const RecruiterDashboard = () => {
               >
               Create Job Posting
             </Button>
+            
               </>
           )}
         </div>

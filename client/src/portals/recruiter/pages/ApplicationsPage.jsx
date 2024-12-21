@@ -18,7 +18,7 @@ const ApplicationsPage = () => {
     maxScore: '',
     limit: ''
   });
-  
+
 
   useEffect(() => {
     let isMounted = true;
@@ -26,7 +26,7 @@ const ApplicationsPage = () => {
     const fetchApplications = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/candidate/applications/${jobId}`);
+        const response = await api.get(`/applications/${jobId}`);
         if (isMounted) {
           console.log("resp ", response.data)
           setApplications(response.data.applications);

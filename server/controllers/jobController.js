@@ -1,4 +1,4 @@
-import pool from '../config/db.js';
+import pool from "../config/db.js";
 
 export const createJob = async (req, res) => {
   try {
@@ -9,26 +9,33 @@ export const createJob = async (req, res) => {
       salaryRange,
       jobPosition,
       applicationEndDate,
-      jobRequirements
+      jobRequirements,
     } = req.body;
 
     // Validate required fields
-    if (!jobTitle || !jobDescription || !location || !jobPosition || !applicationEndDate || !jobRequirements) {
-      return res.status(400).json({ 
-        message: 'Please provide all required fields' 
+    if (
+      !jobTitle ||
+      !jobDescription ||
+      !location ||
+      !jobPosition ||
+      !applicationEndDate ||
+      !jobRequirements
+    ) {
+      return res.status(400).json({
+        message: "Please provide all required fields",
       });
     }
 
     const query = `
-      INSERT INTO jobPostings (
-        jobTitle,
-        jobDescription,
+      INSERT INTO "jobPostings" (
+        "jobTitle",
+        "jobDescription",
         location,
-        salaryRange,
-        jobPosition,
-        postingDate,
-        applicationEndDate,
-        jobRequirements
+        "salaryRange",
+        "jobPosition",
+        "postingDate",
+        "applicationEndDate",
+        "jobRequirements"
       ) VALUES ($1, $2, $3, $4, $5, CURRENT_DATE, $6, $7)
       RETURNING *
     `;
@@ -40,7 +47,7 @@ export const createJob = async (req, res) => {
       salaryRange || null,
       jobPosition,
       applicationEndDate,
-      jobRequirements
+      jobRequirements,
     ];
 
     const result = await pool.query(query, values);
@@ -48,16 +55,15 @@ export const createJob = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Job posting created successfully',
-      job: createdJob
+      message: "Job posting created successfully",
+      job: createdJob,
     });
-
   } catch (error) {
-    console.error('Error in createJob:', error);
+    console.error("Error in createJob:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to create job posting',
-      error: error.message
+      message: "Failed to create job posting",
+      error: error.message,
     });
   }
 };
@@ -66,17 +72,17 @@ export const fetchJobs = async (req, res) => {
   try {
     const query = `
       SELECT 
-        jobPostingId,
-        jobTitle,
-        jobDescription,
+        "jobPostingId",
+        "jobTitle",
+        "jobDescription",
         location,
-        salaryRange,
-        jobPosition,
-        postingDate,
-        applicationEndDate,
-        jobRequirements
-      FROM jobPostings
-      ORDER BY postingDate DESC
+        "salaryRange",
+        "jobPosition",
+        "postingDate",
+        "applicationEndDate",
+        "jobRequirements"
+      FROM "jobPostings"
+      ORDER BY "postingDate" DESC;
     `;
 
     
@@ -91,17 +97,16 @@ export const fetchJobs = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      jobs: formattedJobs
+      jobs: formattedJobs,
     });
-
   } catch (error) {
-    console.error('Error in fetchJobs:', error);
+    console.error("Error in fetchJobs:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch jobs',
-      error: error.message
+      message: "Failed to fetch job postings",
+      error: error.message,
     });
   }
 };
 
-// module.exports = { fetchJobs, createJob };
+

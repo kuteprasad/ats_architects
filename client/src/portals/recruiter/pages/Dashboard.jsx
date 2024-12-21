@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../../../contexts/AuthContext';
+import { hasPermission } from '../../../utils/permissions';
 import Button from '../../../components/common/Button';
 import api from '../../../services/api';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
-import { useAuth } from '../../../contexts/AuthContext';
 
 const RecruiterDashboard = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const [jobPostings, setJobPostings] = useState([]);
   const [expandedJobs, setExpandedJobs] = useState({});
   const [loading, setLoading] = useState(true);
+  const [permissions, setPermissions] = useState({
+    canCreateJobs: false,
+    canDoDbSeeding: false,
+    canHaveInterviews: false
+  });
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Error logging out:', error);
+  useEffect(() => {
+    if (user) {
+      setPermissions({
+        canCreateJobs: hasPermission(user.role, 'job_postings'),
+        canDoDbSeeding: hasPermission(user.role, 'seeding_db'),
+        canHaveInterviews: hasPermission(user.role, 'my_interviews')
+      });
     }
-  };
+  }, [user]);
+  
 
   useEffect(() => {
     fetchJobPostings();
@@ -52,6 +59,23 @@ const RecruiterDashboard = () => {
     console.log('Create job clicked');
   };
 
+  const handleSeeding = () => {
+    console.log("user", user);
+
+    navigate('/recruiter/seedDatabase');
+    // TODO: Navigate to job creation page
+    console.log('Create job clicked');
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
@@ -68,10 +92,38 @@ const RecruiterDashboard = () => {
       </div>
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
-          <Button onClick={handleCreateJob} variant="primary" size="md">
-            Create Job Posting
-          </Button>
+          <div className="space-y-4">
+            {permissions.canCreateJobs && (
+              <Button 
+              onClick={handleCreateJob} 
+              variant="primary" 
+              size="md"
+              className='mr-4'
+              >
+                Create Job Posting
+              </Button>
+            )}
+            {permissions.canDoDbSeeding && (
+              <Button 
+              onClick={handleSeeding} 
+              variant="primary" 
+              size="md"
+              >
+                Seed Database
+              </Button>
+            )}
+
+            {permissions.canHaveInterviews && (
+            <Button 
+              onClick={() => navigate('/recruiter/my-interviews')} 
+              variant="secondary" 
+              size="md"
+              className="ml-4"
+              >
+              My Interviews
+            </Button>
+            )}
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-6">
           <div className="bg-white p-4 rounded shadow">
@@ -94,7 +146,8 @@ const RecruiterDashboard = () => {
                       <Button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/applications/${job.jobPostingId}`);
+                          console.log("navigate to applications ");
+                          navigate(`/recruiter/applications/${job.jobPostingId}`);
                         }}
                         variant="secondary"
                         size="sm"
@@ -110,7 +163,7 @@ const RecruiterDashboard = () => {
                         <p className="mb-2"><span className="font-semibold">Salary Range:</span> {job.salaryRange}</p>
                         <p className="mb-2"><span className="font-semibold">Position:</span> {job.jobPosition}</p>
                         <p className="mb-2"><span className="font-semibold">Posted:</span> {new Date(job.postingDate).toLocaleDateString()}</p>
-                        <p className="mb-2"><span className="font-semibold">Application Deadline:</span> {job.applicationEndDate}</p>
+                        <p className="mb-2"><span className="font-semibold">Application Deadline:</span> {new Date(job.applicationEndDate).toLocaleDateString()}</p>
                         <p><span className="font-semibold">Requirements:</span> {job.jobRequirements}</p>
                       </div>
                     )}

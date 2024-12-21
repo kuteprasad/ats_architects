@@ -6,29 +6,33 @@ export const getApplicationsByJobId = async (req, res) => {
     
     const query = `
       SELECT 
-        a.applicationId,
-        a.applicationDate,
-        a.resume,
-        a.resumeScore,
-        c.firstName,
-        c.lastName,
-        c.email
+        a."applicationId",
+        a."applicationDate",
+        a."resume",
+        a."resumeScore",
+        c."firstName",
+        c."lastName",
+        c."email"
       FROM applications a
-      JOIN candidates c ON a.candidateId = c.candidateId
-      WHERE a.jobPostingId = $1
-      ORDER BY a.resumeScore DESC
+      JOIN candidates c ON a."candidateId" = c."candidateId"
+      WHERE a."jobPostingId" = $1
+      ORDER BY a."resumeScore" DESC NULLS LAST;
     `;
 
     const result = await pool.query(query, [jobId]);
+
+    console.log("res ", result.rows);
 
     const formattedApplications = result.rows.map(app => ({
       applicationId: app.applicationId,
       candidateName: `${app.firstName} ${app.lastName}`,
       email: app.email,
-      applicationDate: app.applicationDate.toISOString(),
+      applicationDate: app.applicationDate.toISOString() ,
       resumeScore: app.resumeScore,
       resume: app.resume // BLOB data
     }));
+
+    console.log("formated ", formattedApplications);
 
     res.status(200).json({
       success: true,
@@ -49,7 +53,9 @@ export const createApplication = async (req, res) => {
   try {
     const { jobId } = req.params;
     const { firstName, lastName, email, phoneNumber } = req.body;
-    const resume = req.files?.resume;
+    const resume = req.file;
+
+    console.log("boday ",  req.body);
 
     if (!firstName || !lastName || !email || !phoneNumber || !resume) {
       return res.status(400).json({
@@ -60,28 +66,30 @@ export const createApplication = async (req, res) => {
 
     // Check if candidate exists
     const checkCandidateQuery = `
-      SELECT candidateId 
-      FROM candidates 
-      WHERE email = $1
+      SELECT "candidateId" 
+      FROM "candidates" 
+      WHERE "email" = $1
     `;
     
     let candidateResult = await pool.query(checkCandidateQuery, [email]);
     let candidateId;
+    console.log("candidate id" , candidateResult.rows[0]);
 
     if (candidateResult.rows.length > 0) {
       // Use existing candidate
+      console.log("dkslfjd");
       candidateId = candidateResult.rows[0].candidateId;
     } else {
       // Create new candidate
       const createCandidateQuery = `
-        INSERT INTO candidates (
-          firstName, 
-          lastName, 
-          email, 
-          phoneNumber
+        INSERT INTO "candidates" (
+          "firstName", 
+          "lastName", 
+          "email", 
+          "phoneNumber"
         )
         VALUES ($1, $2, $3, $4)
-        RETURNING candidateId
+        RETURNING "candidateId"
       `;
 
       candidateResult = await pool.query(createCandidateQuery, [
@@ -90,41 +98,36 @@ export const createApplication = async (req, res) => {
         email,
         phoneNumber
       ]);
-      candidateId = candidateResult.rows[0].candidateId;
+       candidateId = candidateResult.rows[0].candidateId;
+      console.log("candidate", candidateResult.rows[0]);
     }
+
+    console.log("cd 1", candidateId);
 
     // Create application
     const applicationQuery = `
       INSERT INTO applications (
-        jobPostingId,
-        candidateId,
-        applicationDate,
-        applicationStatus,
-        resume,
-        resumeScore
+        "jobPostingId",
+        "candidateId",
+        "applicationDate",
+        "applicationStatus",
+        "resume",
+        "resumeScore"
       )
       VALUES ($1, $2, CURRENT_TIMESTAMP, 'PENDING', $3, NULL)
       RETURNING *
     `;
 
-    const resumeBuffer = resume.data;
     const applicationResult = await pool.query(applicationQuery, [
       jobId,
       candidateId,
-      resumeBuffer
+      resume.buffer
     ]);
 
     res.status(201).json({
       success: true,
       message: 'Application submitted successfully',
-      application: {
-        applicationId: applicationResult.rows[0].applicationId,
-        jobPostingId: applicationResult.rows[0].jobPostingId,
-        candidateId: applicationResult.rows[0].candidateId,
-        applicationDate: applicationResult.rows[0].applicationDate,
-        applicationStatus: applicationResult.rows[0].applicationStatus,
-        resumeScore: applicationResult.rows[0].resumeScore
-      }
+      application: applicationResult.rows[0]
     });
 
   } catch (error) {

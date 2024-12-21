@@ -118,7 +118,17 @@ const InterviewSchedular = () => {
 
   const handleScheduleEdit = (dayIndex, interviewIndex, updatedInterview) => {
     const newSchedule = [...editableSchedule];
-    newSchedule[dayIndex].interviews[interviewIndex] = updatedInterview;
+    const startTime = new Date(updatedInterview.startTime);
+    
+    // Calculate end time based on interview duration
+    const endTime = new Date(startTime.getTime() + scheduleParams.interviewDuration * 60000);
+    
+    newSchedule[dayIndex].interviews[interviewIndex] = {
+      ...updatedInterview,
+      startTime: startTime,
+      endTime: endTime
+    };
+    
     setEditableSchedule(newSchedule);
   };
 
@@ -317,7 +327,7 @@ const InterviewSchedular = () => {
                             startTime: newStartTime
                           });
                         }}
-                        className="border rounded p-1"
+                        className="border rounded p-2"
                       />
                       <select
                         value={interview.interviewer}

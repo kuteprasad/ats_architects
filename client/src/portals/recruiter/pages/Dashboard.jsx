@@ -57,6 +57,7 @@ const RecruiterDashboard = () => {
   };
 
   const handleSeeding = () => {
+    console.log("user", user);
 
     navigate('/recruiter/seedDatabase');
     // TODO: Navigate to job creation page
@@ -150,7 +151,7 @@ const RecruiterDashboard = () => {
                         <p className="mb-2"><span className="font-semibold">Salary Range:</span> {job.salaryRange}</p>
                         <p className="mb-2"><span className="font-semibold">Position:</span> {job.jobPosition}</p>
                         <p className="mb-2"><span className="font-semibold">Posted:</span> {new Date(job.postingDate).toLocaleDateString()}</p>
-                        <p className="mb-2"><span className="font-semibold">Application Deadline:</span> {job.applicationEndDate}</p>
+                        <p className="mb-2"><span className="font-semibold">Application Deadline:</span> {new Date(job.applicationEndDate).toLocaleDateString()}</p>
                         <p><span className="font-semibold">Requirements:</span> {job.jobRequirements}</p>
                       </div>
                     )}

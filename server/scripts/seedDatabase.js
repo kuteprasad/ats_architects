@@ -61,7 +61,6 @@ export const createTables = async (req, res) => {
       "applicationDate" DATE DEFAULT CURRENT_DATE,
       "applicationStatus" VARCHAR(50),
       "resume" BYTEA DEFAULT NULL,
-      "interviewSchedule" DATE DEFAULT NULL,
       "resumeScore" DECIMAL(5, 2) DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS "interviews" (

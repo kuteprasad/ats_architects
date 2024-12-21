@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../../context/AuthContext';
+import { AuthContext } from '../../../contexts/AuthContext';
 import Button from '../../../components/common/Button';
 import api from '../../../services/api';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';

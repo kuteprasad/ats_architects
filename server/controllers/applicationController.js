@@ -24,11 +24,11 @@ export const getApplicationsByJobId = async (req, res) => {
     console.log("res ", result.rows);
 
     const formattedApplications = result.rows.map(app => ({
-      applicationId: app.applicationid,
-      candidateName: `${app.firstname} ${app.lastname}`,
+      applicationId: app.applicationId,
+      candidateName: `${app.firstName} ${app.lastName}`,
       email: app.email,
-      applicationDate: app.applicationdate.toISOString() ,
-      resumeScore: app.resumescore,
+      applicationDate: app.applicationDate.toISOString() ,
+      resumeScore: app.resumeScore,
       resume: app.resume // BLOB data
     }));
 
@@ -98,7 +98,7 @@ export const createApplication = async (req, res) => {
         email,
         phoneNumber
       ]);
-       candidateId = candidateResult.rows[0].candidateid;
+       candidateId = candidateResult.rows[0].candidateId;
       console.log("candidate", candidateResult.rows[0]);
     }
 

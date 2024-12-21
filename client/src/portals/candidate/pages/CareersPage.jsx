@@ -96,7 +96,7 @@ const CareersPage = () => {
                 variant="primary"
                 className="w-full mt-4"
               >
-                View Details & Apply
+                 Apply Now
               </Button>
             </div>
           </div>

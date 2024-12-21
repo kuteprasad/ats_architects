@@ -9,6 +9,16 @@ const ApplicationsPage = () => {
   const [selectedCandidates, setSelectedCandidates] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({
+    dateRange: {
+      start: '',
+      end: ''
+    },
+    minScore: '',
+    maxScore: '',
+    limit: ''
+  });
+  
 
   useEffect(() => {
     let isMounted = true;
@@ -18,6 +28,7 @@ const ApplicationsPage = () => {
         setLoading(true);
         const response = await api.get(`/applications/${jobId}`);
         if (isMounted) {
+          console.log("resp ", response.data)
           setApplications(response.data.applications);
           setError(null);
         }
@@ -63,6 +74,80 @@ const ApplicationsPage = () => {
     }
   };
 
+  const handleViewResume = (resumeData) => {
+    try {
+      // Convert BLOB data to Uint8Array
+      const uint8Array = new Uint8Array(resumeData.data);
+      
+      // Create Blob object
+      const blob = new Blob([uint8Array], { 
+        type: 'application/pdf' 
+      });
+      
+      // Create URL for blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Open in new window
+      window.open(url);
+      
+      // Clean up URL object
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+    } catch (error) {
+      console.error('Error viewing resume:', error);
+      alert('Failed to load resume');
+    }
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleDateRangeChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      dateRange: {
+        ...prev.dateRange,
+        [name]: value
+      }
+    }));
+  };
+
+  const applyFilters = (applications) => {
+    return applications.filter(app => {
+      const date = new Date(app.applicationDate);
+      const score = parseFloat(app.resumeScore);
+      
+      // Date range filter
+      if (filters.dateRange.start && date < new Date(filters.dateRange.start)) return false;
+      if (filters.dateRange.end && date > new Date(filters.dateRange.end)) return false;
+      
+      // Score range filter
+      if (filters.minScore && score < parseFloat(filters.minScore)) return false;
+      if (filters.maxScore && score > parseFloat(filters.maxScore)) return false;
+      
+      return true;
+    }).slice(0, filters.limit ? parseInt(filters.limit) : undefined);
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      dateRange: {
+        start: '',
+        end: ''
+      },
+      minScore: '',
+      maxScore: '',
+      limit: ''
+    });
+  };
+
+  const filteredApplications = applyFilters(applications);
+
   const selectedCount =
     Object.values(selectedCandidates).filter(Boolean).length;
 
@@ -82,6 +167,70 @@ const ApplicationsPage = () => {
           >
             Send Interview Invites
           </Button>
+        </div>
+      </div>
+
+      {/* Filter Section */}
+      <div className="bg-white p-4 mb-6 rounded-lg shadow">
+        <h3 className="text-lg font-medium mb-4">Filters</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Date Range</label>
+            <input
+              type="date"
+              name="start"
+              value={filters.dateRange.start}
+              onChange={handleDateRangeChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+            <input
+              type="date"
+              name="end"
+              value={filters.dateRange.end}
+              onChange={handleDateRangeChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Resume Score Range</label>
+            <input
+              type="number"
+              name="minScore"
+              placeholder="Min Score"
+              value={filters.minScore}
+              onChange={handleFilterChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+            <input
+              type="number"
+              name="maxScore"
+              placeholder="Max Score"
+              value={filters.maxScore}
+              onChange={handleFilterChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Limit Results</label>
+            <input
+              type="number"
+              name="limit"
+              placeholder="Number of results"
+              value={filters.limit}
+              onChange={handleFilterChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+            <Button
+              onClick={resetFilters}
+              variant="secondary"
+              size="sm"
+              className="w-full mt-2"
+            >
+              Reset Filters
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -110,7 +259,7 @@ const ApplicationsPage = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {applications.map((application) => (
+            {filteredApplications.map((application) => (
               <tr key={application.applicationId}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input
@@ -147,13 +296,7 @@ const ApplicationsPage = () => {
 
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Button
-                    onClick={() => {
-                      const blob = new Blob([application.resume], {
-                        type: "application/pdf",
-                      });
-                      const url = window.URL.createObjectURL(blob);
-                      window.open(url);
-                    }}
+                    onClick={() => handleViewResume(application.resume)}
                     variant="secondary"
                     size="sm"
                   >

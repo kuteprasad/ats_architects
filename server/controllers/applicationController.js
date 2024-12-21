@@ -21,14 +21,18 @@ export const getApplicationsByJobId = async (req, res) => {
 
     const result = await pool.query(query, [jobId]);
 
+    console.log("res ", result.rows);
+
     const formattedApplications = result.rows.map(app => ({
-      applicationId: app.applicationId,
-      candidateName: `${app.firstName} ${app.lastName}`,
+      applicationId: app.applicationid,
+      candidateName: `${app.firstname} ${app.lastname}`,
       email: app.email,
-      applicationDate: app.applicationDate.toISOString(),
-      resumeScore: app.resumeScore,
+      applicationDate: app.applicationdate.toISOString() ,
+      resumeScore: app.resumescore,
       resume: app.resume // BLOB data
     }));
+
+    console.log("formated ", formattedApplications);
 
     res.status(200).json({
       success: true,
@@ -69,9 +73,11 @@ export const createApplication = async (req, res) => {
     
     let candidateResult = await pool.query(checkCandidateQuery, [email]);
     let candidateId;
+    console.log("candidate id" , candidateResult.rows[0]);
 
     if (candidateResult.rows.length > 0) {
       // Use existing candidate
+      console.log("dkslfjd");
       candidateId = candidateResult.rows[0].candidateId;
     } else {
       // Create new candidate
@@ -92,8 +98,11 @@ export const createApplication = async (req, res) => {
         email,
         phoneNumber
       ]);
-      candidateId = candidateResult.rows[0].candidateId;
+       candidateId = candidateResult.rows[0].candidateid;
+      console.log("candidate", candidateResult.rows[0]);
     }
+
+    console.log("cd 1", candidateId);
 
     // Create application
     const applicationQuery = `

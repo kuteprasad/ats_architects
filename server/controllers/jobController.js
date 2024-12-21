@@ -27,15 +27,15 @@ export const createJob = async (req, res) => {
     }
 
     const query = `
-      INSERT INTO jobPostings (
-        jobTitle,
-        jobDescription,
+      INSERT INTO "jobPostings" (
+        "jobTitle",
+        "jobDescription",
         location,
-        salaryRange,
-        jobPosition,
-        postingDate,
-        applicationEndDate,
-        jobRequirements
+        "salaryRange",
+        "jobPosition",
+        "postingDate",
+        "applicationEndDate",
+        "jobRequirements"
       ) VALUES ($1, $2, $3, $4, $5, CURRENT_DATE, $6, $7)
       RETURNING *
     `;

@@ -16,7 +16,7 @@ const ApplicationsPage = () => {
     const fetchApplications = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/applications/${jobId}`);
+        const response = await api.get(`/candidate/applications/${jobId}`);
         if (isMounted) {
           setApplications(response.data.applications);
           setError(null);

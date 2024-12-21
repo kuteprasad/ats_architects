@@ -45,7 +45,7 @@ const ApplicationPage = () => {
       formPayload.append('phoneNumber', formData.phoneNumber);
       formPayload.append('resume', formData.resume);
 
-      await api.post(`/applications/${jobId}`, formPayload, {
+      await api.post(`/candidate/applications/${jobId}`, formPayload, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

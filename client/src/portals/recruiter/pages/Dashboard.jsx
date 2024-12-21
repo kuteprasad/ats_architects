@@ -94,7 +94,7 @@ const RecruiterDashboard = () => {
                       <Button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/applications/${job.jobPostingId}`);
+                          navigate(`/recruiter/applications/${job.jobPostingId}`);
                         }}
                         variant="secondary"
                         size="sm"

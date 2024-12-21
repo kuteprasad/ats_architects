@@ -29,6 +29,7 @@ const RecruiterDashboard = () => {
   const fetchJobPostings = async () => {
     try {
       const response = await api.get('/jobs');
+      console.log('Job postings:', response.data.jobs);
       setJobPostings(response.data.jobs);
       setLoading(false);
     } catch (error) {

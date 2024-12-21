@@ -79,13 +79,14 @@ export const fetchJobs = async (req, res) => {
       ORDER BY postingDate DESC
     `;
 
+    
+
     const result = await pool.query(query);
 
-    // Format dates and return jobs
     const formattedJobs = result.rows.map(job => ({
       ...job,
-      postingDate: job.postingDate.toISOString(),
-      applicationEndDate: job.applicationEndDate
+      postingDate: job.postingDate ? job.postingDate.toISOString() : null,
+      applicationEndDate: job.applicationEndDate || null
     }));
 
     res.status(200).json({
@@ -97,7 +98,7 @@ export const fetchJobs = async (req, res) => {
     console.error('Error in fetchJobs:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch job postings',
+      message: 'Failed to fetch jobs',
       error: error.message
     });
   }

@@ -67,7 +67,7 @@ const RecruiterDashboard = () => {
       </div>
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
+          <h1 className="text-2xl font-bold"></h1>
           <Button onClick={handleCreateJob} variant="primary" size="md">
             Create Job Posting
           </Button>

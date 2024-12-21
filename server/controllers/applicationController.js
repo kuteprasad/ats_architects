@@ -6,17 +6,17 @@ export const getApplicationsByJobId = async (req, res) => {
     
     const query = `
       SELECT 
-        a.applicationId,
-        a.applicationDate,
-        a.resume,
-        a.resumeScore,
-        c.firstName,
-        c.lastName,
-        c.email
+        a."applicationId",
+        a."applicationDate",
+        a."resume",
+        a."resumeScore",
+        c."firstName",
+        c."lastName",
+        c."email"
       FROM applications a
-      JOIN candidates c ON a.candidateId = c.candidateId
-      WHERE a.jobPostingId = $1
-      ORDER BY a.resumeScore DESC
+      JOIN candidates c ON a."candidateId" = c."candidateId"
+      WHERE a."jobPostingId" = $1
+      ORDER BY a."resumeScore" DESC NULLS LAST;
     `;
 
     const result = await pool.query(query, [jobId]);
@@ -66,9 +66,9 @@ export const createApplication = async (req, res) => {
 
     // Check if candidate exists
     const checkCandidateQuery = `
-      SELECT candidateId 
-      FROM candidates 
-      WHERE email = $1
+      SELECT "candidateId" 
+      FROM "candidates" 
+      WHERE "email" = $1
     `;
     
     let candidateResult = await pool.query(checkCandidateQuery, [email]);
@@ -82,14 +82,14 @@ export const createApplication = async (req, res) => {
     } else {
       // Create new candidate
       const createCandidateQuery = `
-        INSERT INTO candidates (
-          firstName, 
-          lastName, 
-          email, 
-          phoneNumber
+        INSERT INTO "candidates" (
+          "firstName", 
+          "lastName", 
+          "email", 
+          "phoneNumber"
         )
         VALUES ($1, $2, $3, $4)
-        RETURNING candidateId
+        RETURNING "candidateId"
       `;
 
       candidateResult = await pool.query(createCandidateQuery, [
@@ -107,12 +107,12 @@ export const createApplication = async (req, res) => {
     // Create application
     const applicationQuery = `
       INSERT INTO applications (
-        jobPostingId,
-        candidateId,
-        applicationDate,
-        applicationStatus,
-        resume,
-        resumeScore
+        "jobPostingId",
+        "candidateId",
+        "applicationDate",
+        "applicationStatus",
+        "resume",
+        "resumeScore"
       )
       VALUES ($1, $2, CURRENT_TIMESTAMP, 'PENDING', $3, NULL)
       RETURNING *

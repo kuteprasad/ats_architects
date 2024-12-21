@@ -12,6 +12,7 @@ const RecruiterRoutes = () => {
         <Route path="dashboard" element={<RecruiterDashboard />} />
         <Route path="createposting" element={<CreatePosting />} />
         <Route path="applications/:jobId" element={<ApplicationsPage />} />
+        
       </Route>
     </Routes>
   );

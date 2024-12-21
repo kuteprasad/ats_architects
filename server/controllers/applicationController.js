@@ -49,7 +49,9 @@ export const createApplication = async (req, res) => {
   try {
     const { jobId } = req.params;
     const { firstName, lastName, email, phoneNumber } = req.body;
-    const resume = req.files?.resume;
+    const resume = req.file;
+
+    console.log("boday ",  req.body);
 
     if (!firstName || !lastName || !email || !phoneNumber || !resume) {
       return res.status(400).json({
@@ -107,24 +109,16 @@ export const createApplication = async (req, res) => {
       RETURNING *
     `;
 
-    const resumeBuffer = resume.data;
     const applicationResult = await pool.query(applicationQuery, [
       jobId,
       candidateId,
-      resumeBuffer
+      resume.buffer
     ]);
 
     res.status(201).json({
       success: true,
       message: 'Application submitted successfully',
-      application: {
-        applicationId: applicationResult.rows[0].applicationId,
-        jobPostingId: applicationResult.rows[0].jobPostingId,
-        candidateId: applicationResult.rows[0].candidateId,
-        applicationDate: applicationResult.rows[0].applicationDate,
-        applicationStatus: applicationResult.rows[0].applicationStatus,
-        resumeScore: applicationResult.rows[0].resumeScore
-      }
+      application: applicationResult.rows[0]
     });
 
   } catch (error) {

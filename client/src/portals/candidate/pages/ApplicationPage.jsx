@@ -37,21 +37,26 @@ const ApplicationPage = () => {
     setLoading(true);
     setError(null);
 
+    console.log("ksdfjs ", formData);
+
     try {
       const formPayload = new FormData();
       formPayload.append('firstName', formData.firstName);
       formPayload.append('lastName', formData.lastName);
+
       formPayload.append('email', formData.email);
       formPayload.append('phoneNumber', formData.phoneNumber);
       formPayload.append('resume', formData.resume);
 
-      await api.post(`/candidate/applications/${jobId}`, formPayload, {
+      console.log("formpayload : ", formData);
+
+      await api.post(`/applications/${jobId}`, formPayload, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      navigate('/careers', { 
+      navigate('/candidate/careers', { 
         state: { message: 'Application submitted successfully!' }
       });
     } catch (err) {

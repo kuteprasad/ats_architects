@@ -27,6 +27,7 @@ export const ROLES = {
       'schedule_interview',
       'view_applications',
       'view_job_postings',
+      'seeding_db',
       // 'all_permissions'
     ]
   };

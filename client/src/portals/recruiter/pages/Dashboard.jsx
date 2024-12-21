@@ -14,6 +14,7 @@ const RecruiterDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const canCreateJobs = hasPermission(user?.role, 'job_postings');
+  const canDoDbSeeding = hasPermission(user?.role, 'seeding_db');
   const canHaveInterviews = hasPermission(user?.role, 'my_interviews');
 
   const handleLogout = async () => {
@@ -84,11 +85,12 @@ const RecruiterDashboard = () => {
               onClick={handleCreateJob} 
               variant="primary" 
               size="md"
+              className='mr-4'
               >
                 Create Job Posting
               </Button>
             )}
-            {canCreateJobs && (
+            {canDoDbSeeding && (
               <Button 
               onClick={handleSeeding} 
               variant="primary" 

@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 import { authService } from '../services/authService.js';
 
@@ -21,7 +20,7 @@ export const register = async (req, res) => {
 
     // Create a new user
     const insertUserQuery = `
-      INSERT INTO users (firstName, lastName, email, password, role)
+      INSERT INTO users ("firstName", "lastName", email, password, role)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
@@ -78,9 +77,9 @@ export const getInterviewers = async (req, res) => {
   try {
     const query = `
       SELECT 
-        userId,
-        firstName,
-        lastName,
+        "userId",
+        "firstName",
+        "lastName",
         email
       FROM users 
       WHERE role = 'interviewer'

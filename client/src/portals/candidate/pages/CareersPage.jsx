@@ -61,7 +61,7 @@ const CareersPage = () => {
                 <p className="text-gray-600 line-clamp-3">{job.jobRequirements}</p>
               </div>
               <Button
-                onClick={() => navigate(`/jobs/${job.jobPostingId}`)}
+                onClick={() => navigate(`/candidate/jobs/${job.jobPostingId}`)}
                 variant="primary"
                 className="w-full mt-4"
               >

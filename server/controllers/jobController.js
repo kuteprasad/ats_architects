@@ -85,13 +85,14 @@ export const fetchJobs = async (req, res) => {
       ORDER BY "postingDate" DESC;
     `;
 
+    
+
     const result = await pool.query(query);
 
-    // Format dates and return jobs
-    const formattedJobs = result.rows.map((job) => ({
+    const formattedJobs = result.rows.map(job => ({
       ...job,
-      postingDate: job.postingDate.toISOString(),
-      applicationEndDate: job.applicationEndDate,
+      postingDate: job.postingDate ? job.postingDate.toISOString() : null,
+      applicationEndDate: job.applicationEndDate || null
     }));
 
     res.status(200).json({

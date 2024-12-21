@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../contexts/AuthContext';
 import Button from '../../../components/common/Button';
 import api from '../../../services/api';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const RecruiterDashboard = () => {
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
+  const { logout } = useAuth();
   const [jobPostings, setJobPostings] = useState([]);
   const [expandedJobs, setExpandedJobs] = useState({});
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ const RecruiterDashboard = () => {
   const fetchJobPostings = async () => {
     try {
       const response = await api.get('/jobs');
+      console.log('Job postings:', response.data.jobs);
       setJobPostings(response.data.jobs);
       setLoading(false);
     } catch (error) {

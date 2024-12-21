@@ -9,6 +9,8 @@
     "client": "cd client && npm i && npm run dev",
     "fastapi": "cd fastApi && source .venv/Scripts/activate && fastapi dev main.py",
     "dev": "concurrently -k \"npm run server\" \"npm run client\"",
+    "fastapi-sh": "cd fastApi && .venv\\Scripts\\Activate  && fastapi dev main.py",
+    "devs": "concurrently -k \"npm run server\" \"npm run client\" \"npm run fastapi-sh\"",
     "fastapi-mac": "cd fastapi && source .venv/bin/activate && fastapi dev main.py",
     "devm": "concurrently -k \"npm run server\" \"npm run client\" \"npm run fastapi-mac\""
   },

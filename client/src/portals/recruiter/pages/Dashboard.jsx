@@ -78,9 +78,8 @@ const RecruiterDashboard = () => {
               size="md"
               >
               Create Job Posting
-            </Button>
-            
-              </>
+            </Button>   
+            </>
           )}
         </div>
         <div className="grid grid-cols-1 gap-6">

@@ -27,6 +27,7 @@ app.use('/auth', authRoutes);
 app.use('/jobs', jobRoutes);
 app.use('/applications', applicationRoutes);
 
+
 // Server listen
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

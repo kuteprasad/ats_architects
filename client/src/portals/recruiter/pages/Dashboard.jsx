@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
+import { hasPermission } from '../../../utils/permissions';
 import Button from '../../../components/common/Button';
 import api from '../../../services/api';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
-import { useAuth } from '../../../contexts/AuthContext';
 
 const RecruiterDashboard = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const [jobPostings, setJobPostings] = useState([]);
   const [expandedJobs, setExpandedJobs] = useState({});
   const [loading, setLoading] = useState(true);
+
+  const canCreateJobs = hasPermission(user?.role, 'job_postings');
 
   const handleLogout = async () => {
     try {
@@ -67,10 +70,17 @@ const RecruiterDashboard = () => {
       </div>
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
-          <Button onClick={handleCreateJob} variant="primary" size="md">
-            Create Job Posting
-          </Button>
+          {canCreateJobs && (<>
+          <p className="text-2xl"></p>
+            <Button 
+              onClick={handleCreateJob} 
+              variant="primary" 
+              size="md"
+              >
+              Create Job Posting
+            </Button>
+              </>
+          )}
         </div>
         <div className="grid grid-cols-1 gap-6">
           <div className="bg-white p-4 rounded shadow">

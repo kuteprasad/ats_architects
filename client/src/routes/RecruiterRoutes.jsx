@@ -15,6 +15,7 @@ const RecruiterRoutes = () => {
       <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.INTERVIEWER]} />}>
         <Route path="dashboard" element={<RecruiterDashboard />} />
         <Route path="createposting" element={<CreatePosting />} />
+        <Route path="seeddatabase" element={<CreatePosting />} />
         <Route path="applications/:jobId" element={<ApplicationsPage />} />
         <Route path="interview-schedular" element={<InterviewSchedular />} />
         <Route path="my-interviews" element={<MyInterviews/>} />

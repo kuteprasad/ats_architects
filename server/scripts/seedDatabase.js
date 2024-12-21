@@ -56,7 +56,7 @@ export const createTables = async () => {
     );
     CREATE TABLE IF NOT EXISTS "interviews" (
       "interviewId" SERIAL PRIMARY KEY,
-      "candidateId" INT REFERENCES "candidates"("candidateId"),
+      "applicationId" INT REFERENCES "applications"("applicationId"),
       "jobPostingId" INT REFERENCES "jobPostings"("jobPostingId"),
       "interviewerId" INT REFERENCES "users"("userId"),
       "interviewDate" DATE,
@@ -64,7 +64,7 @@ export const createTables = async () => {
       "interviewResult" VARCHAR(50),
       "feedback" TEXT
     );
-    CREATE TABLE IF NOT EXISTS "notification" (
+    CREATE TABLE IF NOT EXISTS "notifications" (
       "notificationId" SERIAL PRIMARY KEY,
       "recipientId" INT,
       "type" VARCHAR(50),

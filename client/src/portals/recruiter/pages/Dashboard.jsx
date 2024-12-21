@@ -117,7 +117,6 @@ const RecruiterDashboard = () => {
                           e.stopPropagation();
                           console.log("navigate to applications ");
                           navigate(`/recruiter/applications/${job.jobPostingId}`);
-                          
                         }}
                         variant="secondary"
                         size="sm"

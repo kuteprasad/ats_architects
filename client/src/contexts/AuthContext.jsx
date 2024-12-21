@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
     }
   }, []);
-
+  
   const login = (userData) => {
     setUser(userData);
     setIsAuthenticated(true);

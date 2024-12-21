@@ -12,19 +12,22 @@ const RecruiterDashboard = () => {
   const [jobPostings, setJobPostings] = useState([]);
   const [expandedJobs, setExpandedJobs] = useState({});
   const [loading, setLoading] = useState(true);
+  const [permissions, setPermissions] = useState({
+    canCreateJobs: false,
+    canDoDbSeeding: false,
+    canHaveInterviews: false
+  });
 
-  const canCreateJobs = hasPermission(user?.role, 'job_postings');
-  const canDoDbSeeding = hasPermission(user?.role, 'seeding_db');
-  const canHaveInterviews = hasPermission(user?.role, 'my_interviews');
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Error logging out:', error);
+  useEffect(() => {
+    if (user) {
+      setPermissions({
+        canCreateJobs: hasPermission(user.role, 'job_postings'),
+        canDoDbSeeding: hasPermission(user.role, 'seeding_db'),
+        canHaveInterviews: hasPermission(user.role, 'my_interviews')
+      });
     }
-  };
+  }, [user]);
+  
 
   useEffect(() => {
     fetchJobPostings();
@@ -64,6 +67,15 @@ const RecruiterDashboard = () => {
     console.log('Create job clicked');
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
@@ -81,7 +93,7 @@ const RecruiterDashboard = () => {
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
           <div className="space-y-4">
-            {canCreateJobs && (
+            {permissions.canCreateJobs && (
               <Button 
               onClick={handleCreateJob} 
               variant="primary" 
@@ -91,7 +103,7 @@ const RecruiterDashboard = () => {
                 Create Job Posting
               </Button>
             )}
-            {canDoDbSeeding && (
+            {permissions.canDoDbSeeding && (
               <Button 
               onClick={handleSeeding} 
               variant="primary" 
@@ -101,7 +113,7 @@ const RecruiterDashboard = () => {
               </Button>
             )}
 
-            {canHaveInterviews && (
+            {permissions.canHaveInterviews && (
             <Button 
               onClick={() => navigate('/recruiter/my-interviews')} 
               variant="secondary" 

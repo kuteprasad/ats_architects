@@ -2,20 +2,23 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../common/Input';
 import Button from '../common/Button';
-import { login } from '../../services/authService';
+import { loginService } from '../../services/authService';
+import { useAuth } from '../../contexts/AuthContext';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const {login} = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await login(email, password);
+      const response = await loginService(email, password);
       
       console.log("response in loginform: ", response);
+      await login(response.user);
       navigate('/recruiter/dashboard');
 
       // Redirect based on user role

@@ -55,6 +55,13 @@ const RecruiterDashboard = () => {
     console.log('Create job clicked');
   };
 
+  const handleSeeding = () => {
+
+    navigate('/recruiter/seedDatabase');
+    // TODO: Navigate to job creation page
+    console.log('Create job clicked');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
@@ -79,6 +86,15 @@ const RecruiterDashboard = () => {
               size="md"
               >
                 Create Job Posting
+              </Button>
+            )}
+            {canCreateJobs && (
+              <Button 
+              onClick={handleSeeding} 
+              variant="primary" 
+              size="md"
+              >
+                Seed Database
               </Button>
             )}
 

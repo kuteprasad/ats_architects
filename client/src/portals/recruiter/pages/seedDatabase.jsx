@@ -1,75 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../contexts/AuthContext';
-import { hasPermission } from '../../../utils/permissions';
+import React, { useState } from 'react';
+import axios from 'axios';
+
 import Button from '../../../components/common/Button';
 import api from '../../../services/api';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 
 const SeedDatabase = () => {
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
-  const [jobPostings, setJobPostings] = useState([]);
-  const [expandedJobs, setExpandedJobs] = useState({});
-  const [loading, setLoading] = useState(true);
-
-  const canCreateJobs = hasPermission(user?.role, 'job_postings');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleCreateTable = async () => {
     try {
-      await logout();
-      navigate('/login');
+      setLoading(true);
+      const response = await api.get('/seedDatabase/create');
+      setMessage(response.data.message);
     } catch (error) {
-      console.error('Error logging out:', error);
+      setMessage(error.response?.data?.message || 'Error creating tables');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleInsertTable = async () => {
     try {
-      await logout();
-      navigate('/login');
+      setLoading(true);
+      const response = await api.get('/seedDatabase/insert');
+      setMessage(response.data.message);
     } catch (error) {
-      console.error('Error logging out:', error);
+      setMessage(error.response?.data?.message || 'Error inserting data');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeleteTable = async () => {
     try {
-      await logout();
-      navigate('/login');
+      setLoading(true);
+      const response = await api.get('/seedDatabase/delete');
+      
+      setMessage(response.data.message);
     } catch (error) {
-      console.error('Error logging out:', error);
+      setMessage(error.response?.data?.message || 'Error deleting tables');
+    } finally {
+      setLoading(false);
     }
   };
-
+  
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-6 py-4">
           <h1 className="text-2xl font-bold">Seed Database</h1>
-          <Button 
+        </div>
+      </div>
+      <div className="container mx-auto p-6">
+        <div className="space-y-4">
+          <Button
             onClick={handleCreateTable}
-            variant="secondary"
-            size="sm"
+            disabled={loading}
+            variant="primary"
+            size="lg"
+            className="w-full"
           >
-            Delete table
+            Create Tables
           </Button>
-          <Button 
-            onClick={handleDeleteTable}
-            variant="secondary"
-            size="sm"
-          >
-            Insert table
-          </Button>
-          <Button 
+          <Button
             onClick={handleInsertTable}
-            variant="secondary"
-            size="sm"
+            disabled={loading}
+            variant="primary"
+            size="lg"
+            className="w-full"
           >
-            Create table
+            Insert Data
+          </Button>
+          <Button
+            onClick={handleDeleteTable}
+            disabled={loading}
+            variant="danger"
+            size="lg"
+            className="w-full"
+          >
+            Delete Tables
           </Button>
         </div>
+        {message && (
+          <div className="mt-4 p-4 rounded bg-gray-100">
+            {message}
+          </div>
+        )}
       </div>
     </div>
   );

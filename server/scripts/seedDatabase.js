@@ -1,22 +1,32 @@
 import pool from "../config/db.js";
 
-export const deleteTables = async () => {
+export const deleteTables = async (req, res) => {
   const query = `
     DROP TABLE IF EXISTS "jobPostings" CASCADE;
     DROP TABLE IF EXISTS "candidates" CASCADE;
     DROP TABLE IF EXISTS "users" CASCADE;
     DROP TABLE IF EXISTS "applications" CASCADE;
-    DROP TABLE IF EXISTS "interview" CASCADE;
+    DROP TABLE IF EXISTS "interviews" CASCADE;
+    DROP TABLE IF EXISTS "notifications" CASCADE;
   `;
   try {
     await pool.query(query);
     console.log("Tables deleted successfully");
-  } catch (err) {
-    console.error("Error deleting tables:", err);
+    res.status(201).json({
+      success: true,
+      message: 'Tables deleted successfully',
+    });
+  } catch (error) {
+    console.error("Error deleting tables:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting tables:',
+      error: error.message
+    });
   }
 };
 
-export const createTables = async () => {
+export const createTables = async (req, res) => {
   const query = `
     CREATE TABLE IF NOT EXISTS "candidates"(
       "candidateId" SERIAL PRIMARY KEY,
@@ -29,7 +39,7 @@ export const createTables = async () => {
       "userId" SERIAL PRIMARY KEY,
       "firstName" VARCHAR(50) NOT NULL,
       "lastName" VARCHAR(50) NOT NULL,
-      "email" email NOT NULL UNIQUE,
+      "email" VARCHAR(255) NOT NULL UNIQUE,
       "password" VARCHAR(255) NOT NULL,
       "role" VARCHAR(50) NOT NULL CHECK ("role" IN ('admin', 'interviewer', 'HR'))
     );
@@ -59,10 +69,19 @@ export const createTables = async () => {
       "applicationId" INT REFERENCES "applications"("applicationId"),
       "jobPostingId" INT REFERENCES "jobPostings"("jobPostingId"),
       "interviewerId" INT REFERENCES "users"("userId"),
-      "interviewDate" DATE,
-      "interviewType" VARCHAR(50),
-      "interviewResult" VARCHAR(50),
-      "feedback" TEXT
+      "interviewDate" DATE DEFAULT NULL,
+      "interviewStartTime" TIME DEFAULT NULL,
+      "interviewEndTime" TIME DEFAULT NULL,
+      "comments" TEXT DEFAULT NULL,
+      "joinUrl" VARCHAR(255) DEFAULT NULL,
+      "meetingId" VARCHAR(255) DEFAULT NULL,
+      "communicationScore" DECIMAL(5, 2) DEFAULT 0,
+      "technicalScore" DECIMAL(5, 2) DEFAULT 0,
+      "experienceScore" DECIMAL(5, 2) DEFAULT 0,
+      "problemSolvingScore" DECIMAL(5, 2) DEFAULT 0,
+      "culturalFitScore" DECIMAL(5, 2) DEFAULT 0,
+      "timeManagementScore" DECIMAL(5, 2) DEFAULT 0,
+      "overallScore" DECIMAL(5, 2) DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS "notifications" (
       "notificationId" SERIAL PRIMARY KEY,
@@ -76,12 +95,21 @@ export const createTables = async () => {
   try {
     await pool.query(query);
     console.log("Tables created successfully");
-  } catch (err) {
-    console.error("Error creating tables:", err);
+    res.status(201).json({
+      success: true,
+      message: 'Tables created successfully',
+    });
+  } catch (error) {
+    console.error("Error creating tables:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating tables:',
+      error: error.message
+    });
   }
 };
 
-export const insertValues = async () => {
+export const insertValues = async (req, res) => {
   const query = `
     INSERT INTO "candidates" ("firstName", "lastName", "email", "phoneNumber")
     VALUES 
@@ -115,7 +143,16 @@ export const insertValues = async () => {
   try {
     await pool.query(query);
     console.log("Hardcoded values inserted successfully");
-  } catch (err) {
-    console.error("Error inserting hardcoded values:", err);
+    res.status(201).json({
+      success: true,
+      message: 'Hardcoded values inserted successfully',
+    });
+  } catch (error) {
+    console.error("Error inserting hardcoded values:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Error inserting hardcoded values:',
+      error: error.message
+    });
   }
 };

@@ -7,6 +7,7 @@ import CreatePosting from '../portals/recruiter/pages/createposting';
 import ApplicationsPage from '../portals/recruiter/pages/ApplicationsPage';
 import InterviewSchedular from '../portals/recruiter/pages/InterviewSchedular';
 import MyInterviews from '../portals/recruiter/pages/MyInterviews';
+import SeedDatabase from '../portals/recruiter/pages/seedDatabase';
 
 
 const RecruiterRoutes = () => {
@@ -15,7 +16,7 @@ const RecruiterRoutes = () => {
       <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.INTERVIEWER]} />}>
         <Route path="dashboard" element={<RecruiterDashboard />} />
         <Route path="createposting" element={<CreatePosting />} />
-        <Route path="seeddatabase" element={<CreatePosting />} />
+        <Route path="seedDatabase" element={<SeedDatabase />} />
         <Route path="applications/:jobId" element={<ApplicationsPage />} />
         <Route path="interview-schedular" element={<InterviewSchedular />} />
         <Route path="my-interviews" element={<MyInterviews/>} />

@@ -14,6 +14,7 @@ const RecruiterDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const canCreateJobs = hasPermission(user?.role, 'job_postings');
+  const canHaveInterviews = hasPermission(user?.role, 'my_interviews');
 
   const handleLogout = async () => {
     try {
@@ -70,17 +71,28 @@ const RecruiterDashboard = () => {
       </div>
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
-          {canCreateJobs && (<>
-          <p className="text-2xl"></p>
-            <Button 
+          <div className="space-y-4">
+            {canCreateJobs && (
+              <Button 
               onClick={handleCreateJob} 
               variant="primary" 
               size="md"
               >
-              Create Job Posting
+                Create Job Posting
+              </Button>
+            )}
+
+            {canHaveInterviews && (
+            <Button 
+              onClick={() => navigate('/recruiter/my-interviews')} 
+              variant="secondary" 
+              size="md"
+              className="ml-4"
+              >
+              My Interviews
             </Button>
-              </>
-          )}
+            )}
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-6">
           <div className="bg-white p-4 rounded shadow">

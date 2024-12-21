@@ -18,7 +18,8 @@ export const ROLES = {
     ],
     [ROLES.INTERVIEWER]: [
       'view_applications',
-      'view_job_postings'
+      'view_job_postings',
+      'my_interviews'
       // 'manage_applications',
     ],
     [ROLES.ADMIN]: [

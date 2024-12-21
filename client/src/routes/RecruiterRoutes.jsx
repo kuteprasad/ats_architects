@@ -6,6 +6,8 @@ import RecruiterDashboard from '../portals/recruiter/pages/Dashboard';
 import CreatePosting from '../portals/recruiter/pages/createposting';
 import ApplicationsPage from '../portals/recruiter/pages/ApplicationsPage';
 import InterviewSchedular from '../portals/recruiter/pages/InterviewSchedular';
+import MyInterviews from '../portals/recruiter/pages/MyInterviews';
+
 
 const RecruiterRoutes = () => {
   return (
@@ -15,6 +17,8 @@ const RecruiterRoutes = () => {
         <Route path="createposting" element={<CreatePosting />} />
         <Route path="applications/:jobId" element={<ApplicationsPage />} />
         <Route path="interview-schedular" element={<InterviewSchedular />} />
+        <Route path="my-interviews" element={<MyInterviews/>} />
+       
       </Route>
     </Routes>
   );

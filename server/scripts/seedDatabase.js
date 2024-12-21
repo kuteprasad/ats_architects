@@ -54,7 +54,7 @@ export const createTables = async () => {
       "interviewSchedule" DATE DEFAULT NULL,
       "resumeScore" DECIMAL(5, 2) DEFAULT 0
     );
-    CREATE TABLE IF NOT EXISTS "interview" (
+    CREATE TABLE IF NOT EXISTS "interviews" (
       "interviewId" SERIAL PRIMARY KEY,
       "candidateId" INT REFERENCES "candidates"("candidateId"),
       "jobPostingId" INT REFERENCES "jobPostings"("jobPostingId"),

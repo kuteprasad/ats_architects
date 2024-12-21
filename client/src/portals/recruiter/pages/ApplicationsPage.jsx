@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from '../../../contexts/AuthContext';
+import { hasPermission } from '../../../utils/permissions';
 import api from "../../../services/api";
 import Button from "../../../components/common/Button";
 
 const ApplicationsPage = () => {
   const { jobId } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [selectedCandidates, setSelectedCandidates] = useState({});
   const [loading, setLoading] = useState(true);
@@ -22,10 +26,19 @@ const ApplicationsPage = () => {
   // Add state for select all
   const [selectAll, setSelectAll] = useState(false);
 
+  const canViewApplications = hasPermission(user?.role, 'view_applications');
+  const canScheduleInterviews = hasPermission(user?.role, 'schedule_interview');
+
   useEffect(() => {
     let isMounted = true;
 
     const fetchApplications = async () => {
+      if (!canViewApplications) {
+        setError('Unauthorized to view applications');
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         const response = await api.get(`/applications/${jobId}`);
@@ -53,7 +66,7 @@ const ApplicationsPage = () => {
     return () => {
       isMounted = false;
     };
-  }, [jobId]);
+  }, [jobId, canViewApplications]);
 
   const toggleCandidateSelection = (applicationId) => {
     setSelectedCandidates((prev) => ({
@@ -72,21 +85,6 @@ const ApplicationsPage = () => {
     setSelectedCandidates(newSelectedState);
   };
 
-  const handleSendInterviewInvites = async () => {
-    const selectedIds = Object.keys(selectedCandidates).filter(
-      (id) => selectedCandidates[id]
-    );
-    try {
-      await api.post("/applications/send-invites", {
-        applicationIds: selectedIds,
-        jobId,
-      });
-      alert("Interview invites sent successfully!");
-    } catch (error) {
-      console.error("Error sending invites:", error);
-      alert("Failed to send interview invites");
-    }
-  };
 
   const handleViewResume = (resumeData) => {
     try {
@@ -171,8 +169,21 @@ const ApplicationsPage = () => {
   const selectedCount =
     Object.values(selectedCandidates).filter(Boolean).length;
 
+  const handleScheduleInterviews = () => {
+    const selectedIds = Object.keys(selectedCandidates)
+      .filter(id => selectedCandidates[id]);
+    
+    navigate('/recruiter/interview-schedular', {
+      state: { selectedApplications: selectedIds }
+    });
+  };
+
   if (loading) return <div className="p-6">Loading applications...</div>;
   if (error) return <div className="p-6 text-red-500">{error}</div>;
+
+  if (!canViewApplications) {
+    return <Navigate to="/unauthorized" />;
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -180,14 +191,20 @@ const ApplicationsPage = () => {
         <h1 className="text-2xl font-bold">Applications for Job ID: {jobId}</h1>
         <div className="flex items-center gap-4">
           <span className="text-sm">Selected: {selectedCount} candidates</span>
-          <Button
-            onClick={handleSendInterviewInvites}
-            disabled={selectedCount === 0}
-            variant="primary"
-          >
-            Send Interview Invites
-          </Button>
+          {Object.values(selectedCandidates).some(Boolean) && canScheduleInterviews && (
+            <div className="mt-4 flex justify-end">
+              <Button
+                onClick={handleScheduleInterviews}
+                variant="primary"
+                size="md"
+              >
+                Schedule Interviews ({Object.values(selectedCandidates).filter(Boolean).length})
+              </Button>
+            </div>
+          )}
         </div>
+
+        
       </div>
 
       {/* Filter Section */}
@@ -342,6 +359,8 @@ const ApplicationsPage = () => {
           </tbody>
         </table>
       </div>
+
+      
     </div>
   );
 };

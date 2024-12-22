@@ -25,8 +25,8 @@ const InterviewScheduler = () => {
     interviewDuration: 45,
     skipWeekends: true
   });
-  const [generatedSchedule, setGeneratedSchedule] = useState(null);
-  const [editableSchedule, setEditableSchedule] = useState(null);
+  const [generatedSchedule, setGeneratedSchedule] = useState([]);
+  const [editableSchedule, setEditableSchedule] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const selectedApplications = location.state?.selectedApplications || [];
@@ -59,7 +59,7 @@ const InterviewScheduler = () => {
     }));
   };
 
-  const handleScheduleGeneration = () => {
+  const handleScheduleGeneration = async () => {
     const selectedInterviewerIds = Object.keys(selectedInterviewers)
       .filter(id => selectedInterviewers[id]);
 
@@ -68,7 +68,7 @@ const InterviewScheduler = () => {
       return;
     }
 
-    const schedule = generateInterviewSchedule(
+    const schedule = await generateInterviewSchedule(
       selectedInterviewerIds,
       selectedApplications,
       scheduleParams
@@ -95,6 +95,7 @@ const InterviewScheduler = () => {
   const handleConfirmSchedule = () => {
     console.log('Final Schedule:', editableSchedule);
     // TODO: Send to backend
+    
     setShowConfirmation(false);
   };
 
@@ -127,17 +128,16 @@ const InterviewScheduler = () => {
           scheduleParams={scheduleParams}
           setScheduleParams={setScheduleParams}
           onClose={() => setShowModal(false)}
-          onGenerate={() => {
-            handleScheduleGeneration();
+          onGenerate={async () => {  // Add async here
+            await handleScheduleGeneration();  // Add await here
             setShowModal(false);
           }}
         />
       )}
 
-      {editableSchedule && (
-        <EditableSchedule
-         
-            editableSchedule={editableSchedule}
+{editableSchedule && editableSchedule.length > 0 && (
+  <EditableSchedule
+    editableSchedule={editableSchedule}
           interviewers={interviewers}
           handleScheduleEdit={handleScheduleEdit}
           onConfirm={() => setShowConfirmation(true)}
@@ -151,9 +151,11 @@ const InterviewScheduler = () => {
         />
       )}
 
-      {generatedSchedule && (
-        <GeneratedSchedule schedule={generatedSchedule} />
-      )}
+{generatedSchedule && generatedSchedule.length > 0 && (
+  <GeneratedSchedule 
+    schedule={generatedSchedule} 
+  />
+)}
     </div>
   );
 };

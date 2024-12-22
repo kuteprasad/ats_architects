@@ -1,4 +1,6 @@
-export const generateInterviewSchedule = (interviewers, candidates, params) => {
+import api from "../../../../services/api";
+
+export const generateInterviewSchedule = async (interviewers, candidates, params) => {
     const schedule = [];
     let currentDate = new Date(params.startDate);
     const endDate = new Date(params.endDate);
@@ -19,12 +21,37 @@ export const generateInterviewSchedule = (interviewers, candidates, params) => {
       const endTime = new Date(currentDate.setHours(endHour, endMinute));
   
       while (currentTime < endTime && candidateIndex < candidates.length) {
-        daySchedule.push({
-          startTime: new Date(currentTime),
-          endTime: new Date(currentTime.getTime() + params.interviewDuration * 60000),
-          interviewer: interviewers[interviewerIndex],
-          candidate: candidates[candidateIndex]
-        });
+        // Format dates for Google Meet API
+        const startDateTime = currentTime.toISOString();
+        const endDateTime = new Date(currentTime.getTime() + params.interviewDuration * 60000).toISOString();
+        
+        // Create meeting for this interview slot
+        try {
+          const meetingResponse = await api.post('/google/create-meeting', {
+            startDateTime,
+            endDateTime,
+            summary: `Interview with Candidate ${candidates[candidateIndex]}`
+          });
+  
+          daySchedule.push({
+            startTime: new Date(currentTime),
+            endTime: new Date(currentTime.getTime() + params.interviewDuration * 60000),
+            interviewer: interviewers[interviewerIndex],
+            candidate: candidates[candidateIndex],
+            meetingId: meetingResponse.data.meetingId,
+            joinUrl: meetingResponse.data.joinUrl
+          });
+        } catch (error) {
+          console.error('Failed to create meeting:', error);
+          // Still add the interview slot without meeting details
+          daySchedule.push({
+            startTime: new Date(currentTime),
+            endTime: new Date(currentTime.getTime() + params.interviewDuration * 60000),
+            interviewer: interviewers[interviewerIndex],
+            candidate: candidates[candidateIndex],
+            meetingError: 'Failed to create meeting'
+          });
+        }
   
         currentTime = new Date(currentTime.getTime() + params.interviewDuration * 60000);
         candidateIndex++;
@@ -40,4 +67,3 @@ export const generateInterviewSchedule = (interviewers, candidates, params) => {
   
     return schedule;
   };
-  

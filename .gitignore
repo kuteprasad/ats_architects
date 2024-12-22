@@ -1,6 +1,6 @@
 # Node.js
 node_modules/
-
+credentials.json
 config.json
 token.json
 # Logs

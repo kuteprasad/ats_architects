@@ -1,7 +1,5 @@
-import pool from '../config/db.js';
 import { authorize } from '../services/gmailServices.js';
 import { google } from 'googleapis';
-import { extractJobPosition } from '../services/GeminiService.js';
 
 const auth = authorize();
 

@@ -69,7 +69,7 @@ const RecruiterDashboard = () => {
   const handleProcessEmails = async () => {
     try {
 
-      const response = await api.get('/emails');
+      const response = await api.get('/google');
 
       if (response.status === 200) {
         navigate('/recruiter/dashboard');

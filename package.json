@@ -12,7 +12,7 @@
     "fastapi-sh": "cd fastApi && .venv\\Scripts\\Activate  && fastapi dev main.py",
     "devs": "concurrently -k \"npm run server\" \"npm run client\" \"npm run fastapi-sh\"",
     "fastapi-mac": "cd fastapi && source .venv/bin/activate && fastapi dev main.py",
-    "devm": "concurrently -k \"npm run server\" \"npm run client\" \"npm run fastapi-mac\""
+    "devm": "concurrently -k \"npm run server\" \"npm run client\" "
   },
   "repository": {
     "type": "git",

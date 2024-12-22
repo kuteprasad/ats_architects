@@ -71,7 +71,6 @@ export const createTables = async (req, res) => {
       "interviewDate" DATE DEFAULT NULL,
       "interviewStartTime" TIME DEFAULT NULL,
       "interviewEndTime" TIME DEFAULT NULL,
-      "comments" TEXT DEFAULT NULL,
       "joinUrl" VARCHAR(255) DEFAULT NULL,
       "meetingId" VARCHAR(255) DEFAULT NULL,
       "communicationScore" DECIMAL(5, 2) DEFAULT 0,
@@ -79,9 +78,9 @@ export const createTables = async (req, res) => {
       "experienceScore" DECIMAL(5, 2) DEFAULT 0,
       "problemSolvingScore" DECIMAL(5, 2) DEFAULT 0,
       "culturalFitScore" DECIMAL(5, 2) DEFAULT 0,
-
       "timeManagementScore" DECIMAL(5, 2) DEFAULT 0,
       "overallScore" DECIMAL(5, 2) DEFAULT 0,
+      "comments" TEXT DEFAULT NULL,
       "cumulativeScore" DECIMAL(5, 2) DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS "notifications" (

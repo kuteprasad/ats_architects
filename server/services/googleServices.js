@@ -78,6 +78,7 @@ export async function authorize() {
     }
 
 export const getGoogleServices = async () => {
+
   try {
     const authClient = await authorize();
 
@@ -90,11 +91,17 @@ export const getGoogleServices = async () => {
       auth: authClient,
     });
 
+    const mail = google.gmail({
+      version: "v1",
+      auth: authClient,
+    });
+
     const meetClient = new SpacesServiceClient({
       authClient: authClient,
     });
 
     return {
+      mail,
       calendar,
       meetClient,
     };

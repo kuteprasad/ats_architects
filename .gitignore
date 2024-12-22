@@ -1,6 +1,7 @@
 # Node.js
 node_modules/
 
+config.json
 # Logs
 logs
 *.log

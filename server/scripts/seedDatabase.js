@@ -33,7 +33,7 @@ export const createTables = async (req, res) => {
       "firstName" VARCHAR(100),
       "lastName" VARCHAR(100),
       "email" VARCHAR(255) UNIQUE,
-      "phoneNumber" VARCHAR(10)
+      "phoneNumber" VARCHAR(10) DEFAULT NULL
     );
     CREATE TABLE IF NOT EXISTS "users" (
       "userId" SERIAL PRIMARY KEY,
@@ -59,7 +59,7 @@ export const createTables = async (req, res) => {
       "candidateId" INT REFERENCES "candidates"("candidateId"),
       "jobPostingId" INT REFERENCES "jobPostings"("jobPostingId"),
       "applicationDate" DATE DEFAULT CURRENT_DATE,
-      "applicationStatus" VARCHAR(50),
+      "applicationStatus" VARCHAR(50) NOT NULL CHECK ("applicationStatus" IN ('PENDING', 'ACCEPTED', 'REJECTED')) DEFAULT 'PENDING',
       "resume" BYTEA DEFAULT NULL,
       "resumeScore" DECIMAL(5, 2) DEFAULT 0
     );
@@ -79,8 +79,10 @@ export const createTables = async (req, res) => {
       "experienceScore" DECIMAL(5, 2) DEFAULT 0,
       "problemSolvingScore" DECIMAL(5, 2) DEFAULT 0,
       "culturalFitScore" DECIMAL(5, 2) DEFAULT 0,
+
       "timeManagementScore" DECIMAL(5, 2) DEFAULT 0,
-      "overallScore" DECIMAL(5, 2) DEFAULT 0
+      "overallScore" DECIMAL(5, 2) DEFAULT 0,
+      "cumulativeScore" DECIMAL(5, 2) DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS "notifications" (
       "notificationId" SERIAL PRIMARY KEY,

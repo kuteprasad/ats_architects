@@ -25,10 +25,12 @@
   },
   "homepage": "https://github.com/kuteprasad/ats_architects#readme",
   "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
     "body-parser": "^1.20.3",
     "concurrently": "^9.1.0",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "googleapis": "^144.0.0",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.9",
     "sucrase": "^3.35.0",

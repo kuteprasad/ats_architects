@@ -36,7 +36,6 @@ const SeedDatabase = () => {
     try {
       setLoading(true);
       const response = await api.get('/seedDatabase/delete');
-      
       setMessage(response.data.message);
     } catch (error) {
       setMessage(error.response?.data?.message || 'Error deleting tables');

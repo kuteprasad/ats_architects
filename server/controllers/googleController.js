@@ -1,6 +1,9 @@
 import { getGoogleServices } from '../services/googleServices.js';
 import { extractJobPosition, extractFirstLastName } from '../services/GeminiService.js';
 import pool from '../config/db.js';
+import { google } from 'googleapis';
+import { authorize } from '../services/googleServices.js';
+
 
 export const listLabels = async (req, res) => {
   try {
@@ -110,12 +113,21 @@ export const createMeeting = async (req, res) => {
 
 export async function processIncomingEmail(auth) {
   try {
-    const gmail = google.gmail({ version: 'v1', auth });
+
+    const { mail } = await getGoogleServices();
+
+    const gmail = google.gmail({ 
+      version: 'v1',
+      auth : mail
+    });
+
+    
     
     // Get unread messages
     const response = await gmail.users.messages.list({
       userId: 'me',
-      q: 'is:unread'
+      q: 'is:unread',
+      auth: mail
     });
 
 
@@ -318,7 +330,8 @@ export async function processIncomingEmail(auth) {
     }
 
     return emailDetails;
-  } catch (error) {
+  } 
+  catch (error) {
     console.error('Error processing emails:', error);
     throw error;
   }

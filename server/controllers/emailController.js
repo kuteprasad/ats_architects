@@ -1,25 +1,20 @@
-import pool from '../config/db';
-import { authorize } from '../services/gmailServices';
-import { google } from 'googleapis';
 import pool from '../config/db.js';
+import { authorize } from '../services/gmailServices.js';
+import { google } from 'googleapis';
+import { extractJobPosition } from '../services/GeminiService.js';
 
-async function listofLables(authorize){
+const auth = authorize();
 
-  const gmail = google.gmail({ version: 'v1', authorize });
-  const res = await gmail.users.labels.list({
-    userId: 'me' 
-  });
-}
-
-async function getEmails(authorize) {
+export async function processIncomingEmail(auth) {
   try {
-    const gmail = google.gmail({ version: 'v1', authorize });
+    const gmail = google.gmail({ version: 'v1', auth });
     
     // Get unread messages
     const response = await gmail.users.messages.list({
       userId: 'me',
       q: 'is:unread'
     });
+
 
     const messages = response.data.messages || [];
     const emailDetails = [];
@@ -40,76 +35,158 @@ async function getEmails(authorize) {
         
         if (!email) continue;
     
-        // Check if candidate exists
-        const checkCandidateQuery = `
-          SELECT "candidateId" 
-          FROM "candidates" 
-          WHERE "email" = $1
-        `;
-        
-        let candidateResult = await pool.query(checkCandidateQuery, [email]);
-        let candidateId;
-    
-        if (candidateResult.rows.length > 0) {
-          candidateId = candidateResult.rows[0].candidateId;
-        } else {
-          // Extract name from email
-          const [firstName, lastName] = parseNameFromEmail(email);
-          
-          // Create new candidate
-          const createCandidateQuery = `
-            INSERT INTO "candidates" ("firstName", "lastName", "email")
-            VALUES ($1, $2, $3)
-            RETURNING "candidateId"
-          `;
-          candidateResult = await pool.query(createCandidateQuery, [firstName, lastName, email]);
-          candidateId = candidateResult.rows[0].candidateId;
+        // Extract body and subject to extract job position
+        let jobPosition = null;
+        if (subject) {
+          jobPosition = await extractJobPosition(subject);
         }
-    
-        // Extract body
-        let body = '';
-        if (mail.data.payload.parts) {
-          const textPart = mail.data.payload.parts.find(part => part.mimeType === 'text/plain');
-          if (textPart && textPart.body.data) {
-            body = Buffer.from(textPart.body.data, 'base64').toString();
+
+        // If no job position in subject, check body
+        if (!jobPosition || jobPosition === "No job position found.") {
+          let body = '';
+          if (mail.data.payload.parts) {
+            const textPart = mail.data.payload.parts.find(part => part.mimeType === 'text/plain');
+            if (textPart && textPart.body.data) {
+              body = Buffer.from(textPart.body.data, 'base64').toString();
+            }
+          } else if (mail.data.payload.body.data) {
+            body = Buffer.from(mail.data.payload.body.data, 'base64').toString();
           }
-        } else if (mail.data.payload.body.data) {
-          body = Buffer.from(mail.data.payload.body.data, 'base64').toString();
+          
+          jobPosition = await extractJobPosition(body);
         }
-    
+
+        console.log("Extracted Job Position:", jobPosition);
+
+        // Perform actions if valid job position found
+        if (jobPosition && jobPosition !== "No job position found.") {
+          console.log(`Performing actions for job position: ${jobPosition}`);
+        }
+
+        // Query job posting details
+          
+        try{
+            const jobPostingQuery = `
+            SELECT 
+              "jobPostingId",
+              "jobTitle",
+              "jobDescription",
+              "location",
+              "salaryRange",
+              "jobPosition",
+              "postingDate",
+              "applicationEndDate",
+              "jobRequirements"
+            FROM "jobPostings" 
+            WHERE LOWER("jobTitle") = LOWER($1)
+          `;
+
+          const jobPostingResult = await pool.query(jobPostingQuery, [jobPosition]);
+
+          if (jobPostingResult.rows.length > 0) {
+            const jobDetails = jobPostingResult.rows[0];
+
+            // Check if application deadline has passed
+            const currentDate = new Date();
+            const deadlineDate = new Date(jobDetails.applicationEndDate);
+            
+            if (deadlineDate && deadlineDate < currentDate) {
+              console.log('Application deadline has passed for job:', jobDetails.jobTitle);
+              continue; // Skip to next email
+            }
+
+            console.log('Found matching job posting:', {
+              id: jobDetails.jobPostingId,
+              title: jobDetails.jobTitle,
+              description: jobDetails.jobDescription,
+              location: jobDetails.location,
+              salary: jobDetails.salaryRange,
+              position: jobDetails.jobPosition,
+              posted: jobDetails.postingDate,
+              deadline: jobDetails.applicationEndDate,
+              requirements: jobDetails.jobRequirements
+            });
+            
+            // Store job posting reference
+            const jobPostingId = jobDetails.jobPostingId;
+            
+          } else {
+            console.log('No matching job posting found for position:', jobPosition);
+          }
+          }
+          catch(error){
+            console.error("Error inserting job posting details:", error);
+            throw error;
+          }
+
         // Process attachments
+
+        let firstName, lastName, phoneNumber;
+
         const attachments = [];
         if (mail.data.payload.parts) {
           const attachmentParts = mail.data.payload.parts.filter(part => part.filename && part.filename.length > 0);
           
-          for (const part of attachmentParts) {
+          // Check if there's exactly one attachment
+          if (attachmentParts.length === 1) {
+            const part = attachmentParts[0];
             try {
               const attachment = {
                 filename: part.filename,
                 mimeType: part.mimeType,
                 attachmentId: part.body.attachmentId
               };
-    
-              if (attachment.attachmentId) {
+          
+              if (attachment.attachmentId && attachment.filename.toLowerCase().includes('resume')) {
                 const attachmentData = await gmail.users.messages.attachments.get({
                   userId: 'me',
                   messageId: message.id,
                   id: attachment.attachmentId
                 });
-    
+          
                 const binaryData = Buffer.from(attachmentData.data.data, 'base64');
-    
-                if (attachment.filename.toLowerCase().includes('resume')) {
-                  await pool.query(
-                    
-                  );
+                
+                // Extract first and last name from resume content
+                try {
+                  const resumeText = binaryData.toString('utf-8');
+                  let name = await extractFirstLastName(resumeText);
+                  phoneNumber = resumeText.match(/(\d{3})\D*(\d{3})\D*(\d{4})/)?.[0];
+                  [firstName, lastName] = name.split(" ");
+
+                } catch (extractError) {
+                  console.error('Error extracting names from resume:', extractError);
                 }
               }
               attachments.push(attachment);
             } catch (error) {
               console.error(`Error processing attachment: ${part.filename}`, error);
-              continue;
             }
+          }
+        }
+
+        let candidateId;
+        const candidateResult = await pool.query(
+          'INSERT INTO candidates ("firstName", "lastName", "email", "phoneNumber") VALUES ($1, $2, $3, $4) ON CONFLICT (email) DO UPDATE SET firstName = $1, lastName = $2 RETURNING "candidateId"',
+          [firstName || 'Unknown', lastName || 'Unknown', email, phoneNumber]
+        );
+        candidateId = candidateResult.rows[0].candidateId;
+
+        if (jobDetails && jobDetails.jobPostingId && binaryData) {
+          try {
+            await pool.query(
+              `INSERT INTO applications 
+                ("candidateId", "jobPostingId", "resume", "applicationStatus")
+               VALUES ($1, $2, $3, $4)`,
+              [
+                candidateId,
+                jobDetails.jobPostingId,
+                binaryData,
+                'PENDING'
+              ]
+            );
+            console.log('Application created successfully');
+          } catch (error) {
+            console.error('Error creating application:', error);
           }
         }
     
@@ -143,5 +220,3 @@ async function getEmails(authorize) {
     throw error;
   }
 }
-
- 

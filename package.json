@@ -26,6 +26,7 @@
   "homepage": "https://github.com/kuteprasad/ats_architects#readme",
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
+    "@google/generative-ai": "^0.21.0",
     "body-parser": "^1.20.3",
     "concurrently": "^9.1.0",
     "ejs": "^3.1.10",

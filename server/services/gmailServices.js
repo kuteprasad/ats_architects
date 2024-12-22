@@ -7,8 +7,9 @@ import { authenticate } from '@google-cloud/local-auth';
 import pool from '../config/db.js';
 
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.send'];
-const TOKEN_PATH = path.join(process.cwd(), '../config/token.json');
-const CREDENTIALS_PATH = path.join(process.cwd(), '../config/config.json');
+const TOKEN_PATH = path.join(process.cwd(), './config/token.json');
+const CREDENTIALS_PATH = path.join(process.cwd(), './config/config.json');
+
 
 export async function loadSavedCreadentialsIfExists() {
   try {
@@ -69,3 +70,8 @@ export async function authorize() {
     throw err;
   }
 }
+
+// authorize().then(console.log("Token generated")).catch(console.error);
+
+
+    

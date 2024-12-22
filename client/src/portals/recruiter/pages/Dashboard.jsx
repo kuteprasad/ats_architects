@@ -23,7 +23,8 @@ const RecruiterDashboard = () => {
       setPermissions({
         canCreateJobs: hasPermission(user.role, 'job_postings'),
         canDoDbSeeding: hasPermission(user.role, 'seeding_db'),
-        canHaveInterviews: hasPermission(user.role, 'my_interviews')
+        canHaveInterviews: hasPermission(user.role, 'my_interviews'),
+        canProcessEmails: hasPermission(user.role, 'process_emails')
       });
     }
   }, [user]);
@@ -63,8 +64,22 @@ const RecruiterDashboard = () => {
     console.log("user", user);
 
     navigate('/recruiter/seedDatabase');
-    // TODO: Navigate to job creation page
-    console.log('Create job clicked');
+  };
+
+  const handleProcessEmails = async () => {
+    try {
+
+      const response = await api.get('/emails');
+
+      if (response.status === 200) {
+        navigate('/recruiter/dashboard');
+      }
+    } catch (error) {
+      console.error('Error processing emails:', error);
+      // toast.error('Failed to process emails');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -113,6 +128,17 @@ const RecruiterDashboard = () => {
               </Button>
             )}
 
+            {permissions.canProcessEmails && (
+              <Button 
+                onClick={handleProcessEmails} 
+                variant="primary" 
+                size="md"
+                className="ml-4"
+              >
+                Process Emails
+              </Button>
+            )}
+            
             {permissions.canHaveInterviews && (
             <Button 
               onClick={() => navigate('/recruiter/my-interviews')} 

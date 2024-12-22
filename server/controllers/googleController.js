@@ -27,6 +27,54 @@ export const getEmails = async (req, res) => {
   }
 };
 
+
+
+export const createEvent = async (req, res) => {
+  try {
+    const { startDateTime, endDateTime, summary } = req.body;
+    console.log("data received: ", req.body);
+    
+    const { calendar } = await getGoogleServices();
+
+    const event = {
+      summary,
+      start: {
+        dateTime: startDateTime,
+        timeZone: 'Asia/Kolkata',
+      },
+      end: {
+        dateTime: endDateTime,
+        timeZone: 'Asia/Kolkata',
+      },
+      conferenceData: {
+        createRequest: {
+          requestId: `event-${Date.now()}`,
+          conferenceSolutionKey: { 
+            type: 'hangoutsMeet'
+          }
+        }
+      }
+    };
+
+    const response = await calendar.events.insert({
+      calendarId: 'primary',
+      conferenceDataVersion: 1,
+      resource: event
+    });
+
+    res.status(200).json({
+      success: true,
+      eventId: response.data.id,
+      joinUrl: response.data.hangoutLink,
+      startTime: response.data.start.dateTime,
+      endTime: response.data.end.dateTime
+    });
+  } catch (error) {
+    console.error('Error creating event:', error);
+    res.status(500).json({ success: false, message: 'Failed to create event', error: error.message });
+  }
+};
+
 export const createMeeting = async (req, res) => {
   try {
     const { startDateTime, endDateTime, summary } = req.body;

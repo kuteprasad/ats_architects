@@ -6,10 +6,11 @@ import RecruiterDashboard from '../portals/recruiter/pages/Dashboard';
 import CreatePosting from '../portals/recruiter/pages/createposting';
 import ApplicationsPage from '../portals/recruiter/pages/ApplicationsPage';
 import InterviewSchedular from '../portals/recruiter/pages/InterviewSchedular';
-import MyInterviews from '../portals/recruiter/pages/MyInterviews';
+
 import SeedDatabase from '../portals/recruiter/pages/seedDatabase';
 import CreateMeeting from '../pages/CreateMeeting';
 import GetEmails from '../pages/GetEmails';
+import MyInterviews from '../portals/recruiter/pages/MyInterviews';
 
 
 const RecruiterRoutes = () => {

@@ -12,8 +12,8 @@ export const fetchInterviewsByInterviewerId = async (req, res) => {
           i."applicationId",
           i."jobPostingId",
           i."interviewerId",
-          a."firstName" || ' ' || a."lastName" as "candidateName",
-          a."email" as "candidateEmail",
+          c."firstName" || ' ' || c."lastName" as "candidateName",
+          c."email" as "candidateEmail",
           jp."jobTitle",
           i."interviewDate",
           i."interviewStartTime",
@@ -33,11 +33,12 @@ export const fetchInterviewsByInterviewerId = async (req, res) => {
           i."cumulativeScore"
         FROM "interviews" i
         JOIN "applications" a ON i."applicationId" = a."applicationId"
-        JOIN "candidates" c ON i."applicationId" = c."application
+        JOIN "candidates" c ON a."candidateId" = c."candidateId"
         JOIN "jobPostings" jp ON i."jobPostingId" = jp."jobPostingId"
         WHERE i."interviewerId" = $1
         ORDER BY i."interviewDate" ASC, i."interviewStartTime" ASC
       `;
+
   
       const result = await pool.query(query, [interviewerId]);
   

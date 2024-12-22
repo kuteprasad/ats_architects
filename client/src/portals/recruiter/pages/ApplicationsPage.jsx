@@ -4,6 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { hasPermission } from '../../../utils/permissions';
 import api from "../../../services/api";
 import Button from "../../../components/common/Button";
+import ResumeViewer from '../../../components/common/ResumeViewer';
 
 const ApplicationsPage = () => {
   const { jobId } = useParams();
@@ -83,31 +84,6 @@ const ApplicationsPage = () => {
       newSelectedState[app.applicationId] = !selectAll;
     });
     setSelectedCandidates(newSelectedState);
-  };
-
-
-  const handleViewResume = (resumeData) => {
-    try {
-      // Convert BLOB data to Uint8Array
-      const uint8Array = new Uint8Array(resumeData.data);
-
-      // Create Blob object
-      const blob = new Blob([uint8Array], {
-        type: "application/pdf",
-      });
-
-      // Create URL for blob
-      const url = window.URL.createObjectURL(blob);
-
-      // Open in new window
-      window.open(url);
-
-      // Clean up URL object
-      setTimeout(() => window.URL.revokeObjectURL(url), 100);
-    } catch (error) {
-      console.error("Error viewing resume:", error);
-      alert("Failed to load resume");
-    }
   };
 
   const handleFilterChange = (e) => {
@@ -279,86 +255,82 @@ const ApplicationsPage = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={selectAll}
-                    onChange={toggleSelectAll}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span>Select All</span>
-                </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Candidate Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Application Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Resume Score
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Resume
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredApplications.map((application) => (
-              <tr key={application.applicationId}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectedCandidates[application.applicationId] || false
-                    }
-                    onChange={() =>
-                      toggleCandidateSelection(application.applicationId)
-                    }
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    {application.candidateName}
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={toggleSelectAll}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span>Select All</span>
                   </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {application.email}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {new Date(application.applicationDate).toLocaleDateString()}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    {application.resumeScore}
-                  </div>
-                </td>
-
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <Button
-                    onClick={() => handleViewResume(application.resume)}
-                    variant="secondary"
-                    size="sm"
-                  >
-                    View Resume
-                  </Button>
-                </td>
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Candidate Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Application Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Resume Score
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Resume
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredApplications.map((application) => (
+                <tr key={application.applicationId}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      checked={
+                        selectedCandidates[application.applicationId] || false
+                      }
+                      onChange={() =>
+                        toggleCandidateSelection(application.applicationId)
+                      }
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {application.candidateName}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {application.email}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {new Date(application.applicationDate).toLocaleDateString()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {application.resumeScore}
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <ResumeViewer resume={application.resume} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       

@@ -36,22 +36,13 @@ const MyInterviews = () => {
         const dateB = new Date(`${b.interviewDate} ${b.interviewStartTime}`);
         return dateA - dateB;
       });
+      console.log("sorted interviews: ", sortedInterviews);
       setInterviews(sortedInterviews);
+      
     } catch (err) {
       setError('Failed to fetch interviews');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleViewResume = async () => {
-    try {
-      const blob = new Blob([selectedInterview.resume.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      window.open(url);
-    } catch (err) {
-      console.error('Error viewing resume:', err);
-      alert('Failed to load resume');
     }
   };
 
@@ -117,43 +108,87 @@ const MyInterviews = () => {
     interview => isInterviewPast(interview.interviewDate, interview.interviewEndTime)
   );
 
+  const resetFeedback = () => {
+    setRatings({
+      communicationScore: 0,
+      technicalScore: 0,
+      experienceScore: 0,
+      problemSolvingScore: 0,
+      culturalFitScore: 0,
+      timeManagementScore: 0,
+      overallScore: 0,
+      cumulativeScore: 0
+    });
+    setComments('');
+  };
+
+  const handleInterviewSelect = (interview, initialFeedback) => {
+    console.log('Raw interview data:', interview);
+    
+    // Set interview first to ensure data is available
+    setSelectedInterview(interview);
+  
+    // Directly set ratings from interview data
+    const newRatings = {
+      communicationScore: Number(interview.scores.communicationScore) || 0,
+      technicalScore: Number(interview.scores.technicalScore) || 0,
+      experienceScore: Number(interview.scores.experienceScore) || 0,
+      problemSolvingScore: Number(interview.scores.problemSolvingScore) || 0,
+      culturalFitScore: Number(interview.scores.culturalFitScore) || 0,
+      timeManagementScore: Number(interview.scores.timeManagementScore) || 0,
+      overallScore: Number(interview.scores.overallScore) || 0,
+      cumulativeScore: Number(interview.scores.cumulativeScore) || 0
+    };
+  
+    console.log('Setting ratings to:', newRatings);
+    setRatings(newRatings);
+    setComments(interview.comments || '');
+  };
+
   if (loading) return <div className="p-6">Loading interviews...</div>;
   if (error) return <div className="p-6 text-red-500">{error}</div>;
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">My Interviews</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column - Interview Lists */}
+        <div className="space-y-6">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-semibold mb-4">Scheduled Interviews</h2>
+            <InterviewList 
+              interviews={currentInterviews}
+              onSelect={handleInterviewSelect}
+              getStatusColor={getStatusColor}
+            />
+          </div>
 
-      {/* Scheduled Interviews */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">Scheduled Interviews</h2>
-        <InterviewList 
-          interviews={currentInterviews}
-          onSelect={setSelectedInterview}
-          getStatusColor={getStatusColor}
-        />
+          <div className="bg-white rounded-lg shadow p-6">
+            <PastInterviews 
+              interviews={pastInterviews}
+              showPast={showPastInterviews}
+              onToggle={() => setShowPastInterviews(!showPastInterviews)}
+              onSelect={setSelectedInterview}
+              getStatusColor={getStatusColor}
+            />
+          </div>
+        </div>
+
+        {/* Right Column - Interview Feedback */}
+        <div className="lg:sticky lg:top-6">
+          {selectedInterview && (
+            <InterviewFeedback 
+              key={`feedback-${selectedInterview.interviewId}`}
+              interview={selectedInterview}
+              ratings={ratings}
+              comments={comments}
+              onRatingChange={(key, value) => setRatings(prev => ({ ...prev, [key]: value }))}
+              onCommentChange={(e) => setComments(e.target.value)}
+              onSubmit={() => handleRatingSubmit(selectedInterview.interviewId)}
+              onClose={() => setSelectedInterview(null)}
+            />
+          )}
+        </div>
       </div>
-
-      {/* Interview Feedback */}
-      {selectedInterview && (
-        <InterviewFeedback 
-          interview={selectedInterview}
-          ratings={ratings}
-          comments={comments}
-          onRatingChange={(key, value) => setRatings(prev => ({ ...prev, [key]: value }))}
-          onCommentChange={(e) => setComments(e.target.value)}
-          onSubmit={() => handleRatingSubmit(selectedInterview.interviewId)}
-        />
-      )}
-
-      {/* Past Interviews */}
-      <PastInterviews 
-        interviews={pastInterviews}
-        showPast={showPastInterviews}
-        onToggle={() => setShowPastInterviews(!showPastInterviews)}
-        onSelect={setSelectedInterview}
-        getStatusColor={getStatusColor}
-      />
     </div>
   );
 };

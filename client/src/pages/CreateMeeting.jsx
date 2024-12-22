@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import Button from '../components/common/Button';
+import api from '../services/api';
 
 const CreateMeeting = () => {
   const [startDateTime, setStartDateTime] = useState('');
@@ -16,8 +16,9 @@ const CreateMeeting = () => {
     setError(null);
 
     try {
-      const res = await axios.post('/api/create-meeting', { startDateTime, endDateTime, summary });
+      const res = await api.post('/google/create-meeting', { startDateTime, endDateTime, summary });
       setResponse(res.data);
+      console.log("res : ", res.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create meeting');
     } finally {

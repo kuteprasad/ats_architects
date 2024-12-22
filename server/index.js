@@ -7,10 +7,14 @@ import interviewRoutes from "./routes/interviewRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import bodyParser from "body-parser";
 import seedRoutes from "./routes/seedRoutes.js";
-import emailRoutes from "./routes/emailRoutes.js";
-import meetingRoutes from "./routes/meetingRoutes.js";
+
+import googleRoutes from "./routes/googleRoutes.js";
 
 dotenv.config();
+
+
+// Suppress deprecation warnings
+process.env.NODE_NO_WARNINGS = '1';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -34,8 +38,15 @@ app.use("/jobs", jobRoutes);
 app.use("/interviews", interviewRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/seedDatabase", seedRoutes);
-app.use("/emails", emailRoutes);
-app.use('/api', meetingRoutes);
+app.use('/google', googleRoutes);
+
+app.get('/oauth2callback', async (req, res) => {
+  const { code } = req.query;
+  const { tokens } = await oauth2Client.getToken(code);
+  oauth2Client.setCredentials(tokens);
+  res.redirect('/dashboard');
+});
+
 
 // Server listen
 app.listen(port, () => {

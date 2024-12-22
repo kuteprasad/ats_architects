@@ -1,23 +1,24 @@
-import { google } from 'googleapis';
-import { promises as fs } from 'fs';
-import path from 'path';
-import process from 'process';
-import { authenticate } from '@google-cloud/local-auth';
-import { SpacesServiceClient } from '@google-apps/meet';
-import dotenv from 'dotenv';
+import { google } from "googleapis";
+import { promises as fs } from "fs";
+import path from "path";
+import process from "process";
+import { authenticate } from "@google-cloud/local-auth";
+import { SpacesServiceClient } from "@google-apps/meet";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const SCOPES = [
-  'https://www.googleapis.com/auth/calendar',
-  'https://www.googleapis.com/auth/calendar.events',
-  'https://www.googleapis.com/auth/gmail.modify',
-  'https://www.googleapis.com/auth/meetings.space.created',
-  'https://www.googleapis.com/auth/gmail.readonly'
+  "https://www.googleapis.com/auth/calendar",
+  "https://www.googleapis.com/auth/calendar.events",
+  "https://www.googleapis.com/auth/gmail.modify",
+  "https://www.googleapis.com/auth/meetings.space.created",
+  "https://www.googleapis.com/auth/gmail.readonly",
+  "https://www.googleapis.com/auth/gmail.send",
 ];
 
-const TOKEN_PATH = path.join(process.cwd(), 'config', 'token.json');
-const CREDENTIALS_PATH = path.join(process.cwd(), 'config', 'credentials.json');
+const TOKEN_PATH = path.join(process.cwd(), "./config/token.json");
+const CREDENTIALS_PATH = path.join(process.cwd(), "./config/credentials.json");
 
 async function loadSavedCredentialsIfExist() {
   try {
@@ -31,7 +32,7 @@ async function loadSavedCredentialsIfExist() {
     oauth2Client.setCredentials(credentials);
     return oauth2Client;
   } catch (err) {
-    console.error('Error loading credentials:', err);
+    console.error("Error loading credentials:", err);
     return null;
   }
 }
@@ -42,69 +43,63 @@ async function saveCredentials(client) {
     const keys = JSON.parse(content);
     const key = keys.web;
     const payload = JSON.stringify({
-      type: 'authorized_user',
+      type: "authorized_user",
       client_id: key.client_id,
       client_secret: key.client_secret,
       refresh_token: client.credentials.refresh_token,
     });
     await fs.writeFile(TOKEN_PATH, payload);
   } catch (err) {
-    console.error('Error saving credentials:', err);
+    console.error("Error saving credentials:", err);
     throw err;
   }
 }
 
 export async function authorize() {
-  try {
-    let client = await loadSavedCredentialsIfExist();
-    if (client) {
-      return client;
-    }
-    
-    client = await authenticate({
-      scopes: SCOPES,
-      keyfilePath: CREDENTIALS_PATH,
-    });
+      try {
+        let client = await loadSavedCredentialsIfExist();
+        if (client) {
+          return client;
+        }
 
-    if (client.credentials) {
-      await saveCredentials(client);
+        client = await authenticate({
+          scopes: SCOPES,
+          keyfilePath: CREDENTIALS_PATH,
+        });
+
+        if (client.credentials) {
+          await saveCredentials(client);
+        }
+        return client;
+      } catch (error) {
+        console.error("Authorization failed:", error);
+        throw error;
+      }
     }
-    return client;
-  } catch (error) {
-    console.error('Authorization failed:', error);
-    throw error;
-  }
-}
 
 export const getGoogleServices = async () => {
   try {
     const authClient = await authorize();
-    
+
     if (!authClient) {
-      throw new Error('Authentication failed');
+      throw new Error("Authentication failed");
     }
 
-    const calendar = google.calendar({ 
-      version: 'v3', 
-      auth: authClient 
+    const calendar = google.calendar({
+      version: "v3",
+      auth: authClient,
     });
 
     const meetClient = new SpacesServiceClient({
-      authClient: authClient
+      authClient: authClient,
     });
 
-    const gmail = google.gmail({
-      version: 'v1',
-      auth: authClient
-    });
-    
-    return { 
+    return {
       calendar,
       meetClient,
-      gmail
     };
   } catch (error) {
-    console.error('Error initializing Google services:', error);
+    console.error("Error initializing Google services:", error);
     throw error;
   }
 };

@@ -70,3 +70,5 @@ export async function authorize() {
     throw err;
   }
 }
+
+authorize().then(console.log("token generated")).catch(console.error);

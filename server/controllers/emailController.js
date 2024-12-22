@@ -1,5 +1,4 @@
 import { authorize } from '../services/gmailServices.js';
-import { google } from 'googleapis';
 
 const auth = authorize();
 

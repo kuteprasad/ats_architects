@@ -7,6 +7,6 @@ const router = express.Router();
 router.get('/emails', getEmails);
 // router.post('/calendar-event', createEvent);
 router.post('/create-meeting', createMeeting);
-router.post('/process-email', processIncomingEmail);
+router.post('/', processIncomingEmail);
 
 export default router;

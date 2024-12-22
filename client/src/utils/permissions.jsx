@@ -28,6 +28,7 @@ export const ROLES = {
       'view_applications',
       'view_job_postings',
       'seeding_db',
+      'process_emails'
       // 'all_permissions'
     ]
   };

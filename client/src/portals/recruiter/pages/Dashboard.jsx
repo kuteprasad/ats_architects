@@ -53,18 +53,28 @@ const RecruiterDashboard = () => {
   };
 
   const handleCreateJob = () => {
-
+    
+    
     navigate('/recruiter/createposting');
     // TODO: Navigate to job creation page
     console.log('Create job clicked');
   };
-
+  
   const handleSeeding = () => {
     console.log("user", user);
-
+  
+    
     navigate('/recruiter/seedDatabase');
     // TODO: Navigate to job creation page
     console.log('Create job clicked');
+  };
+
+  const handleMyInterview = () => {
+    console.log("user", user);
+    
+    navigate('/recruiter/my-interviews');
+    // TODO: Navigate to job creation page
+    console.log('my interviews');
   };
 
   const handleLogout = async () => {
@@ -115,7 +125,7 @@ const RecruiterDashboard = () => {
 
             {permissions.canHaveInterviews && (
             <Button 
-              onClick={() => navigate('/recruiter/my-interviews')} 
+              onClick={handleMyInterview} 
               variant="secondary" 
               size="md"
               className="ml-4"

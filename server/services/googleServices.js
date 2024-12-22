@@ -12,7 +12,8 @@ const SCOPES = [
   'https://www.googleapis.com/auth/calendar',
   'https://www.googleapis.com/auth/calendar.events',
   'https://www.googleapis.com/auth/gmail.modify',
-  'https://www.googleapis.com/auth/meetings.space.created'
+  'https://www.googleapis.com/auth/meetings.space.created',
+  'https://www.googleapis.com/auth/gmail.readonly'
 ];
 
 const TOKEN_PATH = path.join(process.cwd(), 'config', 'token.json');
@@ -91,10 +92,16 @@ export const getGoogleServices = async () => {
     const meetClient = new SpacesServiceClient({
       authClient: authClient
     });
+
+    const gmail = google.gmail({
+      version: 'v1',
+      auth: authClient
+    });
     
     return { 
       calendar,
-      meetClient
+      meetClient,
+      gmail
     };
   } catch (error) {
     console.error('Error initializing Google services:', error);

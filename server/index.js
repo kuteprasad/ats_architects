@@ -8,6 +8,7 @@ import applicationRoutes from "./routes/applicationRoutes.js";
 import bodyParser from "body-parser";
 import seedRoutes from "./routes/seedRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
+import meetingRoutes from "./routes/meetingRoutes.js";
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ app.use(
 );
 
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 app.use(express.json());
 
 // Routes
@@ -34,6 +35,7 @@ app.use("/interviews", interviewRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/seedDatabase", seedRoutes);
 app.use("/emails", emailRoutes);
+app.use('/api', meetingRoutes);
 
 // Server listen
 app.listen(port, () => {

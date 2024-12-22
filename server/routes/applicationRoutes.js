@@ -2,9 +2,7 @@ import express from 'express';
 import { createApplication, getApplicationsByJobId } from '../controllers/applicationController.js';
 import multer from 'multer';
 
-
 const router = express.Router();
-
 
 router.get('/:jobId', getApplicationsByJobId);
 

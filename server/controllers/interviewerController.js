@@ -1,9 +1,10 @@
-
 import pool from "../config/db.js";
 
 export const fetchInterviewsByInterviewerId = async (req, res) => {
     try {
       const { interviewerId } = req.params;
+
+      console.log("interviewid: ", interviewerId);
   
       const query = `
         SELECT 
@@ -32,6 +33,7 @@ export const fetchInterviewsByInterviewerId = async (req, res) => {
           i."cumulativeScore"
         FROM "interviews" i
         JOIN "applications" a ON i."applicationId" = a."applicationId"
+        JOIN "candidates" c ON i."applicationId" = c."application
         JOIN "jobPostings" jp ON i."jobPostingId" = jp."jobPostingId"
         WHERE i."interviewerId" = $1
         ORDER BY i."interviewDate" ASC, i."interviewStartTime" ASC
@@ -142,15 +144,22 @@ export const fetchInterviewsByInterviewerId = async (req, res) => {
     }
   }
 
-  export const addSchedules = async (req, res) => { 
-    const client = await pool.connect();
-  
+  export const addSchedules = async (req, res) => {
+  const client = await pool.connect();
+
   try {
     await client.query('BEGIN');
     
     const { schedules } = req.body;
     console.log('Received schedules:', schedules);
     
+    const checkQuery = `
+      SELECT * FROM "interviews" 
+      WHERE "applicationId" = $1 
+      AND "jobPostingId" = $2 
+      AND "interviewerId" = $3
+    `;
+
     const insertQuery = `
       INSERT INTO "interviews" (
         "applicationId",
@@ -166,8 +175,25 @@ export const fetchInterviewsByInterviewerId = async (req, res) => {
     `;
 
     const savedInterviews = [];
+    const duplicates = [];
 
     for (const schedule of schedules) {
+      // Check if interview already exists
+      const existingInterview = await client.query(checkQuery, [
+        schedule.applicationId,
+        schedule.jobPostingId,
+        schedule.interviewerId
+      ]);
+
+      if (existingInterview.rows.length > 0) {
+        duplicates.push({
+          applicationId: schedule.applicationId,
+          jobPostingId: schedule.jobPostingId,
+          interviewerId: schedule.interviewerId
+        });
+        continue;
+      }
+
       const startDateTime = new Date(schedule.startDateTime);
       const endDateTime = new Date(schedule.endDateTime);
 
@@ -189,10 +215,13 @@ export const fetchInterviewsByInterviewerId = async (req, res) => {
     await client.query('COMMIT');
     
     console.log('Saved interviews:', savedInterviews);
+    console.log('Duplicate interviews:', duplicates);
+
     res.status(201).json({
       success: true,
       message: 'Schedules added successfully',
-  schedules: savedInterviews
+      schedules: savedInterviews,
+      duplicates: duplicates
     });
 
   } catch (error) {
@@ -206,6 +235,4 @@ export const fetchInterviewsByInterviewerId = async (req, res) => {
   } finally {
     client.release();
   }
-  }
-
-  
+};

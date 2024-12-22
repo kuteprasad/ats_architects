@@ -30,7 +30,7 @@ const MyInterviews = () => {
 
   const fetchInterviews = async () => {
     try {
-      const response = await api.get(`/interviews/interviewer/${user.id}`);
+      const response = await api.get(`/interviews/interviewer/${user.userId}`);
       const sortedInterviews = response.data.interviews.sort((a, b) => {
         const dateA = new Date(`${a.interviewDate} ${a.interviewStartTime}`);
         const dateB = new Date(`${b.interviewDate} ${b.interviewStartTime}`);

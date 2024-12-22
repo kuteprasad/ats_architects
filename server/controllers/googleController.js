@@ -21,13 +21,30 @@ export const listLabels = async (req, res) => {
 export const getEmails = async (req, res) => {
   try {
     const { gmail } = await getGoogleServices();
-    const response = await gmail.users.messages.list({
+
+    // Fetch the list of messages
+    const listResponse = await gmail.users.messages.list({
       userId: 'me',
-      maxResults: 10
+      maxResults: 10,
     });
-    res.status(200).json(response.data);
+
+    const messages = listResponse.data.messages;
+
+    // Fetch details for each message
+    const detailedMessages = await Promise.all(
+      messages.map(async (message) => {
+        const messageResponse = await gmail.users.messages.get({
+          userId: 'me',
+          id: message.id,
+        });
+        return messageResponse.data;
+      })
+    );
+
+    // Return the detailed messages
+    res.status(200).json(detailedMessages);
   } catch (error) {
-    console.error('Error getting emails:', error);
+    console.error('Error getting email details:', error);
     res.status(500).json({ success: false, message: 'Failed to get emails', error: error.message });
   }
 };

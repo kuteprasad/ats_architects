@@ -79,18 +79,18 @@ const InterviewScheduler = () => {
         return;
       }
       
-      console.log("2");
+      // console.log("2");
       const schedule = await generateInterviewSchedule(
         selectedInterviewerIds,
         selectedApplications,
         scheduleParams
       );
-      console.log("3");
+      // console.log("3");
 
       setGeneratedSchedule(schedule);
-      console.log("4");
+      // console.log("4");
       setEditableSchedule(schedule);
-      console.log("5");
+      // console.log("5");
       setShowModal(false);
     } catch (error) {
       console.error("Schedule generation error:", error);
@@ -116,18 +116,20 @@ const InterviewScheduler = () => {
   const handleConfirmSchedule = async () => {
 
     try {
-    console.log('Final Schedule:', editableSchedule);
+    console.log('Final Schedule:', editableSchedule[0].interviews);
     // Sending to backend
 
-    const schedules = editableSchedule.map(schedule => ({
-      applicationId: schedule.applicationId,
+    const schedules = editableSchedule[0].interviews.map(schedule => ({
+      applicationId: schedule.candidate,
       jobPostingId: jobPostingId,
-      interviewerId: schedule.interviewerId,
+      interviewerId: schedule.interviewer,
       startDateTime: schedule.startTime,
       endDateTime: schedule.endTime,
       meetingId: schedule.meetingId,
       joinUrl: schedule.joinUrl
     }));
+
+    console.log("formated schedules , ", schedules );
 
     const response = await api.post('/interviews/schedule', {
       schedules

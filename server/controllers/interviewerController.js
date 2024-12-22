@@ -1,3 +1,4 @@
+
 import pool from "../config/db.js";
 
 export const fetchInterviewsByInterviewerId = async (req, res) => {
@@ -140,3 +141,71 @@ export const fetchInterviewsByInterviewerId = async (req, res) => {
       });
     }
   }
+
+  export const addSchedules = async (req, res) => { 
+    const client = await pool.connect();
+  
+  try {
+    await client.query('BEGIN');
+    
+    const { schedules } = req.body;
+    console.log('Received schedules:', schedules);
+    
+    const insertQuery = `
+      INSERT INTO "interviews" (
+        "applicationId",
+        "jobPostingId",
+        "interviewerId",
+        "interviewDate",
+        "interviewStartTime",
+        "interviewEndTime",
+        "joinUrl",
+        "meetingId"
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `;
+
+    const savedInterviews = [];
+
+    for (const schedule of schedules) {
+      const startDateTime = new Date(schedule.startDateTime);
+      const endDateTime = new Date(schedule.endDateTime);
+
+      const values = [
+        schedule.applicationId,
+        schedule.jobPostingId,
+        schedule.interviewerId,
+        startDateTime.toISOString().split('T')[0],
+        startDateTime.toTimeString().split(' ')[0],
+        endDateTime.toTimeString().split(' ')[0],
+        schedule.joinUrl,
+        schedule.meetingId
+      ];
+
+      const result = await client.query(insertQuery, values);
+      savedInterviews.push(result.rows[0]);
+    }
+
+    await client.query('COMMIT');
+    
+    console.log('Saved interviews:', savedInterviews);
+    res.status(201).json({
+      success: true,
+      message: 'Schedules added successfully',
+  schedules: savedInterviews
+    });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error creating interviews:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create interviews',
+      error: error.message
+    });
+  } finally {
+    client.release();
+  }
+  }
+
+  

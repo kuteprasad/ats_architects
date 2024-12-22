@@ -23,13 +23,20 @@ const InterviewScheduler = () => {
     dailyStartTime: '10:00',
     dailyEndTime: '17:00',
     interviewDuration: 45,
-    skipWeekends: true
+    skipWeekends: true,
+
+    includeLunchBreak: true,
+  lunchStartTime: '13:00',
+  lunchEndTime: '14:00'
+
   });
   const [generatedSchedule, setGeneratedSchedule] = useState([]);
   const [editableSchedule, setEditableSchedule] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const selectedApplications = location.state?.selectedApplications || [];
+  const jobPostingId = location.state?.jobPostingId || 1;
 
   useEffect(() => {
     const fetchInterviewers = async () => {
@@ -60,22 +67,36 @@ const InterviewScheduler = () => {
   };
 
   const handleScheduleGeneration = async () => {
-    const selectedInterviewerIds = Object.keys(selectedInterviewers)
-      .filter(id => selectedInterviewers[id]);
+    setIsGenerating(true);
+    try {
+      const selectedInterviewerIds = Object.keys(selectedInterviewers)
+        .filter(id => selectedInterviewers[id]);
 
-    if (!selectedInterviewerIds.length) {
-      alert('Please select at least one interviewer');
-      return;
+      console.log("requesting schedule generation");
+
+      if (!selectedInterviewerIds.length) {
+        alert('Please select at least one interviewer');
+        return;
+      }
+      
+      console.log("2");
+      const schedule = await generateInterviewSchedule(
+        selectedInterviewerIds,
+        selectedApplications,
+        scheduleParams
+      );
+      console.log("3");
+
+      setGeneratedSchedule(schedule);
+      console.log("4");
+      setEditableSchedule(schedule);
+      console.log("5");
+      setShowModal(false);
+    } catch (error) {
+      console.error("Schedule generation error:", error);
+    } finally {
+      setIsGenerating(false);
     }
-
-    const schedule = await generateInterviewSchedule(
-      selectedInterviewerIds,
-      selectedApplications,
-      scheduleParams
-    );
-    
-    setGeneratedSchedule(schedule);
-    setEditableSchedule(schedule);
   };
 
   const handleScheduleEdit = (dayIndex, interviewIndex, updatedInterview) => {
@@ -92,11 +113,38 @@ const InterviewScheduler = () => {
     setEditableSchedule(newSchedule);
   };
 
-  const handleConfirmSchedule = () => {
+  const handleConfirmSchedule = async () => {
+
+    try {
     console.log('Final Schedule:', editableSchedule);
-    // TODO: Send to backend
+    // Sending to backend
+
+    const schedules = editableSchedule.map(schedule => ({
+      applicationId: schedule.applicationId,
+      jobPostingId: jobPostingId,
+      interviewerId: schedule.interviewerId,
+      startDateTime: schedule.startTime,
+      endDateTime: schedule.endTime,
+      meetingId: schedule.meetingId,
+      joinUrl: schedule.joinUrl
+    }));
+
+    const response = await api.post('/interviews/schedule', {
+      schedules
+    });
+
+    console.log('Interviews created:', response.data);
+  
     
+  } catch (error) {
+    console.error('Error saving interviews:', error);
+    
+    alert('Failed to save interviews');
+ 
+  } finally {   
     setShowConfirmation(false);
+  }
+
   };
 
   if (loading) return <div>Loading...</div>;
@@ -132,6 +180,8 @@ const InterviewScheduler = () => {
             await handleScheduleGeneration();  // Add await here
             setShowModal(false);
           }}
+          isGenerating={isGenerating}
+
         />
       )}
 

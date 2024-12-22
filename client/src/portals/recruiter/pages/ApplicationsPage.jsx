@@ -175,7 +175,7 @@ const ApplicationsPage = () => {
     
     navigate('/recruiter/interview-schedular', {
       state: { selectedApplications: selectedIds,
-        jobId: jobId  }
+        jobPostingId: jobId  }
     });
   };
 

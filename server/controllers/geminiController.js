@@ -25,7 +25,7 @@ export const updateResumeScore = async (req, res) => {
     if (applications.length === 0) {
       return res.status(200).json({
         success: true,
-        message: 'No applications found with null resume score'
+        message: 'No new applications found!'
       });
     }
 

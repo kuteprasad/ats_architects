@@ -91,7 +91,7 @@ export const getGoogleServices = async () => {
       auth: authClient,
     });
 
-    const mail = google.gmail({
+    const gmail = google.gmail({
       version: "v1",
       auth: authClient,
     });
@@ -101,7 +101,7 @@ export const getGoogleServices = async () => {
     });
 
     return {
-      mail,
+      gmail,
       calendar,
       meetClient,
     };

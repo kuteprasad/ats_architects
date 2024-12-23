@@ -1,4 +1,4 @@
-// const { GoogleGenerativeAI } = require("@google/generative-ai");
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from 'dotenv';
 

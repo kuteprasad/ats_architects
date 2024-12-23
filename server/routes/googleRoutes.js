@@ -1,5 +1,6 @@
 import express from 'express';
 import { listLabels, getEmails, createMeeting, processIncomingEmail, createEvent } from '../controllers/googleController.js';
+import { updateResumeScore } from '../controllers/geminiController.js';
 
 const router = express.Router();
 

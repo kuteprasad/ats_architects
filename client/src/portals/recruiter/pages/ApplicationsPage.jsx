@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Navigate, useNavigate } from "react-router-dom";
+import { useParams, Navigate, useNavigate , useLocation} from "react-router-dom";
 import { useAuth } from '../../../contexts/AuthContext';
 import { hasPermission } from '../../../utils/permissions';
 import api from "../../../services/api";
@@ -8,6 +8,8 @@ import ResumeViewer from '../../../components/common/ResumeViewer';
 
 const ApplicationsPage = () => {
   const { jobId } = useParams();
+  const location = useLocation();
+  const jobTitle = location.state?.jobTitle;
   const { user } = useAuth();
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
@@ -165,7 +167,7 @@ const ApplicationsPage = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Applications for Job ID: {jobId}</h1>
+        <h1 className="text-2xl ">Applications for <span className="font-bold"> {jobTitle} </span>  with Job Id: <span className="font-bold">{jobId} </span> </h1>
         <div className="flex items-center gap-4">
           <span className="text-sm">Selected: {selectedCount} candidates</span>
           {Object.values(selectedCandidates).some(Boolean) && canScheduleInterviews && (

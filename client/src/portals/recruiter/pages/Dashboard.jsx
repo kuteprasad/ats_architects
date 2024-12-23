@@ -328,9 +328,11 @@ const RecruiterDashboard = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           console.log("navigate to applications ");
-                          navigate(
-                            `/recruiter/applications/${job.jobPostingId}`
-                          );
+                         
+
+                          navigate(`/recruiter/applications/${job.jobPostingId}`, {
+                            state: { jobTitle: job.jobTitle }
+                          });
                         }}
                         variant="secondary"
                         size="sm"

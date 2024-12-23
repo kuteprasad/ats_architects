@@ -18,6 +18,9 @@ const RecruiterDashboard = () => {
     canHaveInterviews: false,
     canProcessEmails: false,
     canScoreResumes: false,
+    canSeeRecuiterDashboard: false,
+    canSeeHRDashboard : false,
+    canSeeInterviewerDashboard : false
   });
   const [scoreLoading, setScoreLoading] = useState(false);
   const [scoreMessage, setScoreMessage] = useState(null);
@@ -32,7 +35,10 @@ const RecruiterDashboard = () => {
         canHaveInterviews: hasPermission(user.role, "my_interviews"),
         canProcessEmails: hasPermission(user.role, "process_emails"),
         canScoreResumes: hasPermission(user.role, "score_resumes"),
-        canHandleAnalytics: hasPermission(user.role, 'handle_analytics')
+        canHandleAnalytics: hasPermission(user.role, 'handle_analytics'),
+        canSeeRecuiterDashboard: hasPermission(user.role, 'Recruiter-dashboard'),
+        canSeeHRDashboard: hasPermission(user.role, 'HR-dashboard'),
+        canSeeInterviewerDashboard: hasPermission(user.role, 'interviewer-dashboard')
       });
     }
   }, [user]);
@@ -98,9 +104,6 @@ const RecruiterDashboard = () => {
     console.log("my interviews");
   };
 
-  
- 
-
   const handleScoreResumes = async () => {
     try {
       setScoreLoading(true);
@@ -143,7 +146,16 @@ const RecruiterDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
+          
+          {permissions.canSeeRecuiterDashboard && (
+            <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
+          )}
+          {permissions.canSeeHRDashboard && (
+            <h1 className="text-2xl font-bold">HR Dashboard</h1>
+          )}
+          {permissions.canSeeInterviewerDashboard && (
+            <h1 className="text-2xl font-bold">Interviewer Dashboard</h1>
+          )}
           <Button onClick={handleLogout} variant="secondary" size="sm">
             Logout
           </Button>

@@ -15,6 +15,7 @@ export const ROLES = {
       'view_applications',
       'handle_analytics',
       'view_job_postings',
+      'HR-dashboard'
       // 'seeding_db',
       // 'process_emails',
       // 'score_resumes'
@@ -23,7 +24,8 @@ export const ROLES = {
     [ROLES.INTERVIEWER]: [
       'view_applications',
       'view_job_postings',
-      'my_interviews'
+      'my_interviews',
+      'interviewer-dashboard'
       // 'manage_applications',
     ],
     [ROLES.ADMIN]: [
@@ -31,10 +33,11 @@ export const ROLES = {
       'schedule_interview',
       'view_applications',
       'view_job_postings',
-      'seeding_db',
+      // 'seeding_db',
       'process_emails',
       'handle_analytics',
-      'score_resumes'
+      'score_resumes',
+      'Recruiter-dashboard'
       // 'all_permissions'
     ]
   };

@@ -12,6 +12,25 @@ export const ScheduleParametersModal = ({
   const maxDate = new Date();
   maxDate.setFullYear(today.getFullYear() + 1);
 
+  const handleStartDateChange = (e) => {
+    const newStartDate = e.target.value;
+    setScheduleParams((prev) => {
+      // If end date is earlier than new start date, update end date to start date
+      if (prev.endDate && prev.endDate < newStartDate) {
+        return {
+          ...prev,
+          startDate: newStartDate,
+          endDate: newStartDate,
+        };
+      }
+      return {
+        ...prev,
+        startDate: newStartDate,
+      };
+    });
+    e.target.blur(); // Close date dialog
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg w-96">
@@ -20,40 +39,35 @@ export const ScheduleParametersModal = ({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Start Date</label>
-          <input
-            type="date"
-            value={scheduleParams.startDate}
-            min={today.toISOString().split("T")[0]}
-            max={maxDate.toISOString().split("T")[0]}
-            onChange={(e) => {
-              setScheduleParams((prev) => ({
-                ...prev,
-                startDate: e.target.value,
-              }));
-              e.target.blur(); // This will close the date dialog after selection
-            }}
-            className="w-full border rounded p-2"
-          />
+            <input
+              type="date"
+              value={scheduleParams.startDate}
+              min={today.toISOString().split("T")[0]}
+              max={maxDate.toISOString().split("T")[0]}
+              onChange={handleStartDateChange}
+              className="w-full border rounded p-2"
+            />
           </div>
 
-
+          
           <div>
             <label className="block text-sm font-medium mb-1">End Date</label>
-        
             <input
-            type="date"
-            value={scheduleParams.endDate}
-            min={today.toISOString().split("T")[0]}
-            max={maxDate.toISOString().split("T")[0]}
-            onChange={(e) => {
-              setScheduleParams((prev) => ({
-                ...prev,
-                endDate: e.target.value,
-              }));
-              e.target.blur(); // This will close the date dialog after selection
-            }}
-            className="w-full border rounded p-2"
-          />
+              type="date"
+              value={scheduleParams.endDate}
+              min={
+                scheduleParams.startDate || today.toISOString().split("T")[0]
+              }
+              max={maxDate.toISOString().split("T")[0]}
+              onChange={(e) => {
+                setScheduleParams((prev) => ({
+                  ...prev,
+                  endDate: e.target.value,
+                }));
+                e.target.blur(); // Close date dialog
+              }}
+              className="w-full border rounded p-2"
+            />
           </div>
 
           <div>
@@ -124,49 +138,59 @@ export const ScheduleParametersModal = ({
           </div>
 
           <div>
-    <label className="flex items-center space-x-2">
-      <input
-        type="checkbox"
-        checked={scheduleParams.includeLunchBreak}
-        onChange={e => setScheduleParams(prev => ({
-          ...prev,
-          includeLunchBreak: e.target.checked
-        }))}
-        className="rounded border-gray-300"
-      />
-      <span className="text-sm font-medium">Include Lunch Break</span>
-    </label>
-  </div>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={scheduleParams.includeLunchBreak}
+                onChange={(e) =>
+                  setScheduleParams((prev) => ({
+                    ...prev,
+                    includeLunchBreak: e.target.checked,
+                  }))
+                }
+                className="rounded border-gray-300"
+              />
+              <span className="text-sm font-medium">Include Lunch Break</span>
+            </label>
+          </div>
 
-  {scheduleParams.includeLunchBreak && (
-    <div className="ml-6 space-y-4">
-      <div>
-        <label className="block text-sm font-medium mb-1">Lunch Start Time</label>
-        <input
-          type="time"
-          value={scheduleParams.lunchStartTime}
-          onChange={e => setScheduleParams(prev => ({
-            ...prev,
-            lunchStartTime: e.target.value
-          }))}
-          className="w-full border rounded p-2"
-        />
-      </div>
+          {scheduleParams.includeLunchBreak && (
+            <div className="ml-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Lunch Start Time
+                </label>
+                <input
+                  type="time"
+                  value={scheduleParams.lunchStartTime}
+                  onChange={(e) =>
+                    setScheduleParams((prev) => ({
+                      ...prev,
+                      lunchStartTime: e.target.value,
+                    }))
+                  }
+                  className="w-full border rounded p-2"
+                />
+              </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">Lunch End Time</label>
-        <input
-          type="time"
-          value={scheduleParams.lunchEndTime}
-          onChange={e => setScheduleParams(prev => ({
-            ...prev,
-            lunchEndTime: e.target.value
-          }))}
-          className="w-full border rounded p-2"
-        />
-      </div>
-    </div>
-  )}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Lunch End Time
+                </label>
+                <input
+                  type="time"
+                  value={scheduleParams.lunchEndTime}
+                  onChange={(e) =>
+                    setScheduleParams((prev) => ({
+                      ...prev,
+                      lunchEndTime: e.target.value,
+                    }))
+                  }
+                  className="w-full border rounded p-2"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mt-6 flex justify-end space-x-3">
@@ -211,5 +235,3 @@ export const ScheduleParametersModal = ({
     </div>
   );
 };
-
-

@@ -21,6 +21,8 @@ const RecruiterDashboard = () => {
   });
   const [scoreLoading, setScoreLoading] = useState(false);
   const [scoreMessage, setScoreMessage] = useState(null);
+  const [emailProcessing, setEmailProcessing] = useState(false);
+  const [emailMessage, setEmailMessage] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -69,12 +71,22 @@ const RecruiterDashboard = () => {
 
   const handleProcessEmails = async () => {
     try {
-      const response = await api.get("/google");
-      
+      setEmailProcessing(true);
+      setEmailMessage(null);
+
+      const response = await api.get("/google/process-emails");
+
+      setEmailMessage({
+        type: "success",
+        text: response.data.message,
+      });
     } catch (error) {
-      console.error("Error processing emails:", error);
+      setEmailMessage({
+        type: "error",
+        text: error.response?.data?.message || "Failed to process emails",
+      });
     } finally {
-      setLoading(false);
+      setEmailProcessing(false);
     }
   };
 
@@ -140,7 +152,7 @@ const RecruiterDashboard = () => {
           )}
 
           {permissions.canScoreResumes && (
-            <div >
+            <div>
               <Button
                 onClick={handleScoreResumes}
                 disabled={scoreLoading}
@@ -174,8 +186,6 @@ const RecruiterDashboard = () => {
                   "Update Resume Scores"
                 )}
               </Button>
-
-              
             </div>
           )}
 
@@ -186,9 +196,42 @@ const RecruiterDashboard = () => {
           )}
 
           {permissions.canProcessEmails && (
-            <Button onClick={handleProcessEmails} variant="primary" size="md">
-              Check Email for new Applications
-            </Button>
+            <div>
+              <Button
+                onClick={handleProcessEmails}
+                variant="primary"
+                size="md"
+                disabled={emailProcessing}
+                className="flex items-center gap-2"
+              >
+                {emailProcessing ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Processing Emails...
+                  </>
+                ) : (
+                  "Check Email for new Applications"
+                )}
+              </Button>
+            </div>
           )}
 
           {permissions.canHaveInterviews && (
@@ -202,16 +245,27 @@ const RecruiterDashboard = () => {
             </Button>
           )}
           {scoreMessage && (
-                <div
-                  className={`mt-4 p-4 rounded ${
-                    scoreMessage.type === "success"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {scoreMessage.text}
-                </div>
-              )}
+            <div
+              className={`mt-4 p-4 rounded ${
+                scoreMessage.type === "success"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {scoreMessage.text}
+            </div>
+          )}
+          {emailMessage && (
+            <div
+              className={`mt-4 p-4 rounded ${
+                emailMessage.type === "success"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {emailMessage.text}
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-1 gap-6">
           <div className="bg-white p-4 rounded shadow">

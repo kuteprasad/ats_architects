@@ -46,26 +46,67 @@ export async function processIncomingEmail() {
           continue;
         }
 
+
+
+
+
         // Find resume attachment
-        const parts = fullMessage.data.payload.parts || [];
-        const attachment = parts.find(
-          part => part.mimeType === 'application/pdf' || 
-                 part.mimeType === 'application/msword' ||
-                 part.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        );
+const parts = fullMessage.data.payload.parts || [];
+let attachment = null;
 
-        if (!attachment) {
-          console.log(`Skipping email without resume: ${subject}`);
-          skippedCount++;
-          continue;
-        }
+// Recursive function to find attachments in nested parts
+const findAttachment = (parts) => {
+  for (const part of parts) {
+    if (part.filename && isValidFileType(part.mimeType)) {
+      return {
+        filename: part.filename,
+        mimeType: part.mimeType,
+        attachmentId: part.body.attachmentId
+      };
+    }
+    if (part.parts) {
+      const found = findAttachment(part.parts);
+      if (found) return found;
+    }
+  }
+  return null;
+};
 
-        // Get attachment content
-        const attachmentData = await gmail.users.messages.attachments.get({
-          userId: 'me',
-          messageId: message.id,
-          id: attachment.body.attachmentId
-        });
+// Look for attachment in all parts
+const foundAttachment = findAttachment(parts);
+
+if (!foundAttachment) {
+  console.log(`Skipping email without resume: ${subject}`);
+  skippedCount++;
+  continue;
+}
+
+// Get attachment content
+const attachmentData = await gmail.users.messages.attachments.get({
+  userId: 'me',
+  messageId: message.id,
+  id: foundAttachment.attachmentId
+});
+        // Find resume attachment
+        // const parts = fullMessage.data.payload.parts || [];
+        // const attachment = parts.find(
+        //   part => part.mimeType === 'application/pdf' || 
+        //          part.mimeType === 'application/msword' ||
+        //          part.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        // );
+
+        // if (!attachment) {
+        //   console.log(`Skipping email without resume: ${subject}`);
+        //   skippedCount++;
+        //   continue;
+        // }
+
+        // // Get attachment content
+        // const attachmentData = await gmail.users.messages.attachments.get({
+        //   userId: 'me',
+        //   messageId: message.id,
+        //   id: attachment.body.attachmentId
+        // });
 
         if (!attachmentData.data.data) {
           console.log(`Failed to get attachment data for email: ${subject}`);

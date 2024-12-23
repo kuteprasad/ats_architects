@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
+import { sendEmail } from '../../../services/emailService';
 import Button from '../../../components/common/Button';
 
 const ApplicationPage = () => {
@@ -8,6 +9,7 @@ const ApplicationPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -36,6 +38,7 @@ const ApplicationPage = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setMessage(null);
 
     console.log("ksdfjs ", formData);
 
@@ -50,16 +53,25 @@ const ApplicationPage = () => {
 
       console.log("formpayload : ", formData);
 
-      await api.post(`/applications/${jobId}`, formPayload, {
+      const res = await api.post(`/applications/${jobId}`, formPayload, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
+      // Extract email data from response
+      const emailData = res.data;
+
+      // Send thank you email
+      // await sendEmail(emailData);
+
+      setMessage({ type: 'success', text: 'Application submitted and email sent successfully' });
+
       navigate('/candidate/careers', { 
         state: { message: 'Application submitted successfully!' }
       });
     } catch (err) {
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to submit application and send email' });
       setError(err.response?.data?.message || 'Failed to submit application');
     } finally {
       setLoading(false);
@@ -155,6 +167,11 @@ const ApplicationPage = () => {
           {loading ? 'Submitting...' : 'Submit Application'}
         </Button>
       </form>
+      {message && (
+        <div className={`mt-4 p-4 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {message.text}
+        </div>
+      )}
     </div>
   );
 };

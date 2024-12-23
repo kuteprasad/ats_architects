@@ -1,5 +1,6 @@
 import { processIncomingEmail } from '../services/emailProcessor.js';
 import { getGoogleServices } from '../services/googleServices.js';
+import { EMAIL_TEMPLATES, formatTemplate } from '../utils/emailTemplates.js';
 
 export const getEmails = async (req, res) => {
   try {
@@ -79,6 +80,66 @@ export const processEmails = async (req, res) => {
     res.status(500).json({ 
       success: false,
       message: `Failed to process emails: ${error.message}` 
+    });
+  }
+};
+
+export const sendEmails = async (req, res) => {
+  try {
+    const { recipients, templateName, variables } = req.body;
+    const { gmail } = await getGoogleServices();
+    
+    const template = EMAIL_TEMPLATES[templateName];
+    if (!template) {
+      throw new Error('Invalid template name');
+    }
+
+    const results = await Promise.all(recipients.map(async recipient => {
+      const recipientVars = {
+        ...variables,
+        candidateName: recipient.name
+      };
+
+      const subject = formatTemplate(template.subject, recipientVars);
+      const body = formatTemplate(template.body, recipientVars);
+
+      const message = {
+        from: 'me',
+        to: recipient.email,
+        subject: subject,
+        text: body
+      };
+
+      const raw = Buffer.from(
+        `From: me\r\n` +
+        `To: ${message.to}\r\n` +
+        `Subject: ${message.subject}\r\n\r\n` +
+        `${message.text}`
+      ).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+      await gmail.users.messages.send({
+        userId: 'me',
+        requestBody: { raw }
+      });
+
+      return {
+        email: recipient.email,
+        status: 'sent'
+      };
+    }));
+
+    res.status(200).json({
+      success: true,
+      message: 'Emails sent successfully',
+      results
+    });
+
+  } catch (error) {
+    console.error('Error sending emails:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send emails',
+      error: error.message
     });
   }
 };

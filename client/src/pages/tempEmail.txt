@@ -1,0 +1,38 @@
+INTERVIEW_SCHEDULED
+{
+  "recipients": [
+    { "name": "John Doe", "email": "john@example.com" },
+    { "name": "Jane Smith", "email": "jane@example.com" }
+  ],
+  "templateName": "INTERVIEW_SCHEDULED",
+  "variables": {
+    "position": "Software Engineer",
+    "date": "2024-03-20",
+    "time": "10:00 AM",
+    "meetingLink": "https://meet.google.com/xyz",
+    "meetingId": "123-456-789"
+  }
+}
+THANK_YOU
+{
+  "recipients": [
+    { "name": "John Doe", "email": "john@example.com" },
+    { "name": "Jane Smith", "email": "jane@example.com" }
+  ],
+  "templateName": "THANK_YOU",
+  "variables": {
+    "position": "Software Engineer"
+  }
+}
+FINAL_STATUS
+{
+  "recipients": [
+    { "name": "John Doe", "email": "john@example.com" },
+    { "name": "Jane Smith", "email": "jane@example.com" }
+  ],
+  "templateName": "FINAL_STATUS",
+  "variables": {
+    "position": "Software Engineer",
+    "status": "selected" // or "rejected" or "onhold"
+  }
+}

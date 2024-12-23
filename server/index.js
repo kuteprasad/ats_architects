@@ -7,6 +7,7 @@ import interviewRoutes from "./routes/interviewRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import bodyParser from "body-parser";
 import seedRoutes from "./routes/seedRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 import googleRoutes from "./routes/googleRoutes.js";
 
@@ -39,6 +40,7 @@ app.use("/interviews", interviewRoutes);
 app.use("/applications", applicationRoutes);
 app.use("/seedDatabase", seedRoutes);
 app.use('/google', googleRoutes);
+app.use('/analytics', analyticsRoutes);
 
 app.get('/oauth2callback', async (req, res) => {
   const { code } = req.query;

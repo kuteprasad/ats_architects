@@ -13,7 +13,8 @@ export const ROLES = {
       // 'view_profile',
       // 'update_profile',
       // 'apply_job',
-      'view_applications'
+      'view_applications',
+      'handle_analytics'
       
     ],
     [ROLES.INTERVIEWER]: [
@@ -28,7 +29,8 @@ export const ROLES = {
       'view_applications',
       'view_job_postings',
       'seeding_db',
-      'process_emails'
+      'process_emails',
+      'handle_analytics'
       // 'all_permissions'
     ]
   };

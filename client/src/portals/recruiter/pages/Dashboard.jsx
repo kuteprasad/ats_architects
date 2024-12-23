@@ -24,7 +24,8 @@ const RecruiterDashboard = () => {
         canCreateJobs: hasPermission(user.role, 'job_postings'),
         canDoDbSeeding: hasPermission(user.role, 'seeding_db'),
         canHaveInterviews: hasPermission(user.role, 'my_interviews'),
-        canProcessEmails: hasPermission(user.role, 'process_emails')
+        canProcessEmails: hasPermission(user.role, 'process_emails'),
+        canHandleAnalytics: hasPermission(user.role, 'handle_analytics')
       });
     }
   }, [user]);
@@ -57,14 +58,12 @@ const RecruiterDashboard = () => {
     
     
     navigate('/recruiter/createposting');
-    // TODO: Navigate to job creation page
     console.log('Create job clicked');
   };
   
   const handleSeeding = () => {
-    console.log("user", user);
-  
     
+    console.log("user", user);
     navigate('/recruiter/seedDatabase');
   };
 
@@ -88,6 +87,14 @@ const RecruiterDashboard = () => {
     console.log("user", user);
     
     navigate('/recruiter/my-interviews');
+    // TODO: Navigate to job creation page
+    console.log('my interviews');
+  };
+
+  const handleAnalytics = () => {
+    console.log("user", user);
+    
+    navigate('/recruiter/analytics');
     // TODO: Navigate to job creation page
     console.log('my interviews');
   };
@@ -146,6 +153,17 @@ const RecruiterDashboard = () => {
                 className="ml-4"
               >
                 Process Emails
+              </Button>
+            )}
+
+            {permissions.canHandleAnalytics && (
+              <Button 
+              onClick={handleAnalytics} 
+              variant="primary" 
+              size="md"
+              className='ml-4'
+              >
+                View Analytics
               </Button>
             )}
             

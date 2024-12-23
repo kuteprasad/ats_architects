@@ -12,7 +12,8 @@ const SCOPES = [
   "https://www.googleapis.com/auth/calendar",
   "https://www.googleapis.com/auth/calendar.events",
   "https://www.googleapis.com/auth/gmail.modify",
-  "https://www.googleapis.com/auth/meetings.space.created"
+  "https://www.googleapis.com/auth/meetings.space.created",
+  "https://mail.google.com/"
 ];
 
 const TOKEN_PATH = path.join(process.cwd(), "./config/token.json");

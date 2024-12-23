@@ -31,7 +31,7 @@ export const ROLES = {
       'schedule_interview',
       'view_applications',
       'view_job_postings',
-      'seeding_db',
+      // 'seeding_db',
       'process_emails',
       'handle_analytics',
       'score_resumes'

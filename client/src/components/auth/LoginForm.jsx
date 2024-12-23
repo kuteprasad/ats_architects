@@ -111,8 +111,13 @@ const LoginForm = () => {
                     >
                         Sign in
                     </button>
+
                 </div>
             </form>
+            <Button onClick={()=> { navigate('/candidate/careers')}}        
+            className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-200 ease-in-out hover:-translate-y-0.5">
+                    Go to Careers Page
+            </Button>
         </div>
     </div>
   );

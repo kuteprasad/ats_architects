@@ -31,7 +31,7 @@ const RecruiterDashboard = () => {
         canDoDbSeeding: hasPermission(user.role, "seeding_db"),
         canHaveInterviews: hasPermission(user.role, "my_interviews"),
         canProcessEmails: hasPermission(user.role, "process_emails"),
-        canScoreResumes: hasPermission(user.role, "score_resumes"),,
+        canScoreResumes: hasPermission(user.role, "score_resumes"),
         canHandleAnalytics: hasPermission(user.role, 'handle_analytics')
       });
     }
@@ -121,33 +121,6 @@ const RecruiterDashboard = () => {
 
   const handleAnalytics = () => {
     console.log("user", user);
-    navigate("/recruiter/my-interviews");
-    console.log("my interviews");
-  };
-
-  const handleScoreResumes = async () => {
-    try {
-      setScoreLoading(true);
-      setScoreMessage(null);
-
-      const response = await api.get("/google/update-resume-score");
-
-      setScoreMessage({
-        type: "success",
-        text: response.data.message,
-      });
-    } catch (error) {
-      setScoreMessage({
-        type: "error",
-        text: error.response?.data?.message || "Failed to process resumes",
-      });
-    } finally {
-      setScoreLoading(false);
-    }
-  };
-
-  const handleAnalytics = () => {
-    console.log("user", user);
     
     navigate('/recruiter/analytics');
     // TODO: Navigate to job creation page
@@ -180,7 +153,7 @@ const RecruiterDashboard = () => {
         <div className="mb-6 flex items-center gap-4">
           {permissions.canCreateJobs && (
             <Button
-              onClick={() => navigate("/recruiter/create-job")}
+              onClick={handleCreateJob}
               variant="primary"
               size="md"
             >

@@ -13,6 +13,7 @@ export const ROLES = {
       // 'job_postings',
       // 'schedule_interview',
       'view_applications',
+      'handle_analytics',
       'view_job_postings',
       // 'seeding_db',
       // 'process_emails',
@@ -32,6 +33,7 @@ export const ROLES = {
       'view_job_postings',
       'seeding_db',
       'process_emails',
+      'handle_analytics',
       'score_resumes'
       // 'all_permissions'
     ]

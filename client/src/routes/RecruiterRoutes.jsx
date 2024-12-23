@@ -16,7 +16,7 @@ import MyInterviews from '../portals/recruiter/pages/MyInterviews';
 const RecruiterRoutes = () => {
   return (
     <Routes>
-      <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.INTERVIEWER]} />}>
+      <Route element={<PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.INTERVIEWER, ROLES.HR]} />}>
         <Route path="dashboard" element={<RecruiterDashboard />} />
         <Route path="createposting" element={<CreatePosting />} />
         <Route path="seedDatabase" element={<SeedDatabase />} />

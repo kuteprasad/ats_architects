@@ -10,10 +10,13 @@ export const ROLES = {
   
   export const permissionMap = {
     [ROLES.HR]: [
-      // 'view_profile',
-      // 'update_profile',
-      // 'apply_job',
-      'view_applications'
+      // 'job_postings',
+      // 'schedule_interview',
+      'view_applications',
+      'view_job_postings',
+      // 'seeding_db',
+      // 'process_emails',
+      // 'score_resumes'
       
     ],
     [ROLES.INTERVIEWER]: [

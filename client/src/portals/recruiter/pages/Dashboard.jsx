@@ -123,8 +123,8 @@ const RecruiterDashboard = () => {
     console.log("user", user);
     
     navigate('/recruiter/analytics');
-    // TODO: Navigate to job creation page
-    console.log('my interviews');
+   
+    console.log('analytics page');
   };
 
   const handleLogout = async () => {

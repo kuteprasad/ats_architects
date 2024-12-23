@@ -46,7 +46,7 @@ function isValidFileType(mimeType) {
     return validTypes.includes(mimeType);
   }
 
-  export async function processIncomingEmail(req, res) {
+  export async function processIncomingEmail() {
     const client = await pool.connect();
     
     try {
@@ -60,7 +60,12 @@ function isValidFileType(mimeType) {
       });
   
       if (!response.data.messages) {
-        return res.json({ message: 'No unread emails found' });
+        return {
+          success: true,
+          message: 'No unread emails found',
+          processed: 0,
+          skipped: 0
+        };
       }
   
       let processedCount = 0;
@@ -105,6 +110,8 @@ function isValidFileType(mimeType) {
               messageId: message.id,
               id: attachmentPart.body.attachmentId,
             });
+
+            // console.log("attachment :", attachment.data.data);
   
             if (!attachment.data.data) {
               console.log(`Failed to get attachment data for email: ${subject}`);
@@ -114,7 +121,8 @@ function isValidFileType(mimeType) {
   
             const resumeBuffer = Buffer.from(attachment.data.data, "base64url");
             const resumeContent = resumeBuffer.toString("utf-8");
-  
+            
+            console.log("resume content: ", resumeContent);
             // Validate if it's actually a resume
             const isValidResume = await analyzeResume(resumeContent);
   
@@ -171,20 +179,6 @@ function isValidFileType(mimeType) {
                   },
                 };
   
-                // const mockRes = {
-                //   status: function (code) {
-                //     return {
-                //       json: function (data) {
-                //         if (code !== 201) {
-                //           throw new Error(
-                //             data.message || "Failed to create application"
-                //           );
-                //         }
-                //         return data;
-                //       },
-                //     };
-                //   },
-                // };
                 const mockRes = {
                     status: function (code) {
                       this.statusCode = code; // Store status code if needed
@@ -197,13 +191,29 @@ function isValidFileType(mimeType) {
                       return data;
                     },
                   };
-                  
   
                 // Create the application
                 await createApplication(mockReq, mockRes);
-                console.log(
-                  `Successfully created application for job ${job.jobPostingId}`
-                );
+  
+                processingResults.push({
+                  emailId: message.id,
+                  subject: fullMessage.data.payload.headers.find(h => h.name === 'Subject')?.value || 'No subject',
+                  candidate: candidateInfo.email,
+                  jobId: job.jobPostingId,
+                  status: 'success'
+                });
+  
+                // Mark email as read
+                await gmail.users.messages.modify({
+                  userId: 'me',
+                  id: message.id,
+                  requestBody: {
+                    removeLabelIds: ['UNREAD']
+                  }
+                });
+  
+                processedCount++;
+  
               } catch (error) {
                 console.error(
                   `Failed to create application for job ${job.jobPostingId}:`,
@@ -247,17 +257,18 @@ function isValidFileType(mimeType) {
         }
       }
   
-      return res.json({
+      return {
+        success: true,
         processed: processedCount,
         skipped: skippedCount,
         details: processingResults,
-        timestamp: new Date().toISOString(),
-      });
+        message: `Processed ${processedCount} emails, skipped ${skippedCount}`,
+        timestamp: new Date().toISOString()
+      };
     } catch (error) {
       console.error("Error in email processing:", error);
-      return res.status(500).json({ message: `Failed to process emails: ${error.message}` });
+      throw error;
     } finally {
       client.release();
     }
   }
-  

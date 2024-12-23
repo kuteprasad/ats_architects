@@ -70,18 +70,15 @@ export const createMeeting = async (req, res) => {
 // src/controllers/emailController.js
 export const processEmails = async (req, res) => {
   try {
-    console.log("reached process emails");
-    const results = await processIncomingEmail();
-    res.status(200).json({
-      success: true,
-      ...results
-    });
+    const result = await processIncomingEmail();
+    console.log("res :", result);
+    
+    res.status(200).json(result);
   } catch (error) {
-    console.error('Error processing emails:', error);
-    res.status(500).json({
+    console.error("Error processing emails:", error);
+    res.status(500).json({ 
       success: false,
-      message: 'Failed to process emails',
-      error: error.message
+      message: `Failed to process emails: ${error.message}` 
     });
   }
 };

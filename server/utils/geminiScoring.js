@@ -1,11 +1,7 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { RESUME_ANALYSIS_PROMPT } from './geminiPrompt.js';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+import { getGeminiResponse } from './geminiApi.js';
 
 export const calculateResumeScore = async (jobContext, resumeContent) => {
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-  
   const prompt = `
     ${RESUME_ANALYSIS_PROMPT}
 
@@ -18,11 +14,8 @@ export const calculateResumeScore = async (jobContext, resumeContent) => {
     Return only a number between 0-100.
   `;
 
-  console.log("prompt: ", prompt);
-
   try {
-    const result = await model.generateContent(prompt);
-    const response = result.response.text().trim();
+    const response = await getGeminiResponse(prompt);
     const score = parseFloat(response);
     
     if (isNaN(score) || score < 0 || score > 100) {
@@ -31,7 +24,7 @@ export const calculateResumeScore = async (jobContext, resumeContent) => {
 
     return score;
   } catch (error) {
-    console.error('Gemini API error:', error);
+    console.error('Resume scoring error:', error);
     throw error;
   }
 };

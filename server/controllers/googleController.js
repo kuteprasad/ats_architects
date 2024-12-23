@@ -131,12 +131,9 @@ export const createMeeting = async (req, res) => {
 export const processIncomingEmail = async (req, res) => {
   try {
 
-    const { mail } = await getGoogleServices();
+    const { gmail } = await getGoogleServices();
 
-    const gmail = google.gmail({ 
-      version: 'v1',
-      auth : mail
-    });
+   
     
     // Get unread messages
     const response = await gmail.users.messages.list({

@@ -70,9 +70,7 @@ const RecruiterDashboard = () => {
   const handleProcessEmails = async () => {
     try {
       const response = await api.get("/google");
-      if (response.status === 200) {
-        navigate("/recruiter/dashboard");
-      }
+      
     } catch (error) {
       console.error("Error processing emails:", error);
     } finally {
@@ -189,7 +187,7 @@ const RecruiterDashboard = () => {
 
           {permissions.canProcessEmails && (
             <Button onClick={handleProcessEmails} variant="primary" size="md">
-              Process Emails
+              Check Email for new Applications
             </Button>
           )}
 

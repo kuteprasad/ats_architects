@@ -6,8 +6,9 @@ import Button from "../../../components/common/Button";
 import api from "../../../services/api";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
 import Loading from "../../../components/common/Loading";
+import architectsLogo from '../../../assets/architectsLogo.png';
 
-const RecruiterDashboard = () => {
+const Dashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [jobPostings, setJobPostings] = useState([]);
@@ -106,6 +107,7 @@ const RecruiterDashboard = () => {
   };
 
   const handleScoreResumes = async () => {
+    setLoading(true);
     try {
       setScoreLoading(true);
       setScoreMessage(null);
@@ -123,6 +125,7 @@ const RecruiterDashboard = () => {
       });
     } finally {
       setScoreLoading(false);
+      setLoading(false);
     }
   };
 
@@ -143,20 +146,28 @@ const RecruiterDashboard = () => {
     }
   };
 
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          
-          {permissions.canSeeRecuiterDashboard && (
-            <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
-          )}
-          {permissions.canSeeHRDashboard && (
-            <h1 className="text-2xl font-bold">HR Dashboard</h1>
-          )}
-          {permissions.canSeeInterviewerDashboard && (
-            <h1 className="text-2xl font-bold">Interviewer Dashboard</h1>
-          )}
+          <div className="flex items-center space-x-4">
+            <img
+              src={architectsLogo}
+              alt="ATS Architects Logo"
+              className="h-12 w-12 rounded-full object-cover"
+            />
+            {permissions.canSeeRecuiterDashboard && (
+              <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
+            )}
+            {permissions.canSeeHRDashboard && (
+              <h1 className="text-2xl font-bold">HR Dashboard</h1>
+            )}
+            {permissions.canSeeInterviewerDashboard && (
+              <h1 className="text-2xl font-bold">Interviewer Dashboard</h1>
+            )}
+          </div>
           <Button onClick={handleLogout} variant="secondary" size="sm">
             Logout
           </Button>
@@ -389,4 +400,4 @@ const RecruiterDashboard = () => {
   );
 };
 
-export default RecruiterDashboard;
+export default Dashboard;

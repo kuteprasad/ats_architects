@@ -7,7 +7,7 @@ At ATS Project, we take security seriously. If you discover any security-related
 ### How to Report
 
 1. **Do Not** create a public GitHub issue for security vulnerabilities
-2. Send an email to [prasadkute0708@gmail.com] with the following details:
+2. Send an email to prasadkute0708@gmail.com with the following details:
    - Description of the vulnerability
    - Steps to reproduce the issue
    - Possible impacts
@@ -48,8 +48,8 @@ We regularly update our dependencies to patch security vulnerabilities. Users sh
 ## Contact
 
 For security concerns, please contact:
-- Email: [prasadkute0708@gmail.com]
-- Maintainer: [Prasad Kute]
+- Email: prasadkute0708@gmail.com
+- Maintainer: Prasad Kute
 
 ## Acknowledgments
 

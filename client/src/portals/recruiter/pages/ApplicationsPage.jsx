@@ -313,7 +313,7 @@ const ApplicationsPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredApplications.map((application) => (
+              {filteredApplications.map((application, index) => (
                 <tr key={application.applicationId}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <input
@@ -325,7 +325,11 @@ const ApplicationsPage = () => {
                         toggleCandidateSelection(application.applicationId)
                       }
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
+                    /> 
+                    <span className="ml-2   text-sm text-gray-500">
+
+                    {index + 1}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">

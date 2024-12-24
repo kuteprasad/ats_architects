@@ -12,6 +12,7 @@ import Button from "../../../components/common/Button";
 import ResumeViewer from "../../../components/common/ResumeViewer";
 import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
+import { CalendarIcon } from '@heroicons/react/solid';
 
 const ApplicationsPage = () => {
   const { jobId } = useParams();
@@ -179,25 +180,33 @@ const ApplicationsPage = () => {
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl ">
-          Applications for <span className="font-bold"> {jobTitle} </span> with
-          Job Id: <span className="font-bold">{jobId} </span>{" "}
+          Applications for <span className="font-bold"> {jobTitle} </span> 
         </h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm">Selected: {selectedCount} candidates</span>
-          {Object.values(selectedCandidates).some(Boolean) &&
-            canScheduleInterviews && (
-              <div className="mt-4 flex justify-end">
-                <Button
-                  onClick={handleScheduleInterviews}
-                  variant="primary"
-                  size="md"
-                >
-                  Schedule Interviews (
-                  {Object.values(selectedCandidates).filter(Boolean).length})
-                </Button>
-              </div>
-            )}
+    
+
+<div className="flex items-center gap-4">
+  {canScheduleInterviews && (
+    <div className="mt-4 flex justify-end">
+      <Button
+        onClick={handleScheduleInterviews}
+        variant="primary"
+        size="md"
+        disabled={selectedCount === 0}
+      >
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5 text-white" />
+            <span>Schedule Interviews</span>
+          </div>
+          <span className="text-xs font-thin text-white mt-1">
+            Selected: {selectedCount} candidates
+          </span>
         </div>
+      </Button>
+    </div>
+  )}
+</div>
+
       </div>
 
       {/* Filter Section */}

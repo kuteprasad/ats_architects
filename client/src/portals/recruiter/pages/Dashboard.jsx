@@ -5,6 +5,7 @@ import { hasPermission } from "../../../utils/permissions";
 import Button from "../../../components/common/Button";
 import api from "../../../services/api";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
+import Loading from "../../../components/common/Loading";
 
 const RecruiterDashboard = () => {
   const navigate = useNavigate();
@@ -307,7 +308,7 @@ const RecruiterDashboard = () => {
           <div className="bg-white p-4 rounded shadow">
             <h2 className="text-xl font-semibold mb-4">Open Positions</h2>
             {loading ? (
-              <p>Loading...</p>
+              <Loading size="lg" text="Please wait..." />
             ) : (
               <div className="space-y-4">
                 {jobPostings.map((job) => (

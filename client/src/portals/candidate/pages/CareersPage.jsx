@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Button from "../../../components/common/Button";
 import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
+import Loading from '../../../components/common/Loading';
 
 const CareersPage = () => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const CareersPage = () => {
     );
   };
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading) return <Loading size="lg" text="Please wait..." /> ;
   if (error) return <div className="p-6 text-red-500">{error}</div>;
 
   return (

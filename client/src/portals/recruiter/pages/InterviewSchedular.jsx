@@ -9,6 +9,7 @@ import { ConfirmationModal } from '../components/InterviewScheduler/Confirmation
 import { EditableSchedule } from '../components/InterviewScheduler/EditableSchedule';
 import { GeneratedSchedule } from '../components/InterviewScheduler/GeneratedSchedule';
 import { generateInterviewSchedule } from '../components/InterviewScheduler/scheduleGenerator';
+import Loading from '../../../components/common/Loading';
 
 const InterviewScheduler = () => {
   const location = useLocation();
@@ -149,7 +150,7 @@ const InterviewScheduler = () => {
 
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading size="lg" text="Please wait..." />;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (

@@ -3,6 +3,7 @@ import Button from "../../../components/common/Button";
 import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 import Loading from '../../../components/common/Loading';
+import ErrorMessage from "../../../components/common/ErrorMessage";
 
 const CareersPage = () => {
   const navigate = useNavigate();
@@ -56,7 +57,9 @@ const CareersPage = () => {
   };
 
   if (loading) return <Loading size="lg" text="Please wait..." /> ;
-  if (error) return <div className="p-6 text-red-500">{error}</div>;
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
 
   return (
     <div className="container mx-auto p-6">

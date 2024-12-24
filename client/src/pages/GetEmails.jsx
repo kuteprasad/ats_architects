@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
 import Button from '../components/common/Button';
 import api from '../services/api';
+import Loading from '../components/common/Loading';
 
 const GetEmails = () => {
   const [emails, setEmails] = useState([]);
@@ -47,7 +48,8 @@ const GetEmails = () => {
       )}
 
       {loading ? (
-        <div className="text-center py-4">Loading emails...</div>
+       
+        <Loading size="lg" text="Loading emails..." />
       ) : (
         <div className="space-y-4">
           {emails.length === 0 ? (

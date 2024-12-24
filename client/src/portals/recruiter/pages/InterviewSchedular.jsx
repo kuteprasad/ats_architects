@@ -10,6 +10,7 @@ import { EditableSchedule } from '../components/InterviewScheduler/EditableSched
 import { GeneratedSchedule } from '../components/InterviewScheduler/GeneratedSchedule';
 import { generateInterviewSchedule } from '../components/InterviewScheduler/scheduleGenerator';
 import Loading from '../../../components/common/Loading';
+import ErrorMessage from '../../../components/common/ErrorMessage';
 
 const InterviewScheduler = () => {
   const location = useLocation();
@@ -151,7 +152,9 @@ const InterviewScheduler = () => {
   };
 
   if (loading) return <Loading size="lg" text="Please wait..." />;
-  if (error) return <div className="text-red-500">{error}</div>;
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
 
   return (
     <div className="container mx-auto p-6">

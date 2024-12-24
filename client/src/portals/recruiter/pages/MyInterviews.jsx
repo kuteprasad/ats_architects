@@ -4,6 +4,8 @@ import api from '../../../services/api';
 import InterviewList from '../components/InterviewList';
 import InterviewFeedback from '../components/InterviewFeedback';
 import PastInterviews from '../components/PastInterviews';
+import Loading from '../../../components/common/Loading';
+import ErrorMessage from '../../../components/common/ErrorMessage';
 
 const MyInterviews = () => {
   const { user } = useAuth();
@@ -145,8 +147,10 @@ const MyInterviews = () => {
     setComments(interview.comments || '');
   };
 
-  if (loading) return <div className="p-6">Loading interviews...</div>;
-  if (error) return <div className="p-6 text-red-500">{error}</div>;
+  if (loading) return <Loading size="lg" text="Loading Interviews ..." />;
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
 
   return (
     <div className="container mx-auto p-6">

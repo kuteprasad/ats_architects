@@ -64,7 +64,7 @@ root/
 
 Here’s the updated **"How to Run the Project"** section:  
 
----
+----
 
 ## **🚀 How to Run the Project**
 ### **1. Prerequisites**
@@ -109,7 +109,10 @@ We welcome contributions to improve this project! 🛠️
 
 ## **📧 Contact**
 If you have any questions or suggestions, feel free to reach out:    
-- **LinkedIn**: [Prasad's LinkedIn](https://www.linkedin.com/in/kuteprasad)  
+- **LinkedIn**: [Prasad's LinkedIn](https://www.linkedin.com/in/kuteprasad)
+- **LinkedIn**: [Pranav's LinkedIn](www.linkedin.com/in/pranavlondhe)
+- **LinkedIn**: [Shradhha's LinkedIn](www.linkedin.com/in/shraddha-mali21)
+- **LinkedIn**: [Harshal's LinkedIn](https://www.linkedin.com/in/harshal-nalawade-81056625b/)
 
 ---
 

@@ -12,6 +12,12 @@ import { generateInterviewSchedule } from '../components/InterviewScheduler/sche
 import Loading from '../../../components/common/Loading';
 import ErrorMessage from '../../../components/common/ErrorMessage';
 import { sendInterviewScheduledEmail } from '../../../services/emailService';
+import { 
+  toggleInterviewer, 
+  handleScheduleEdit, 
+  formatScheduleForAPI, 
+  formatEmailData 
+} from '../../../utils/InterviewSchedularUtils';
 
 const InterviewScheduler = () => {
   const location = useLocation();
@@ -27,11 +33,9 @@ const InterviewScheduler = () => {
     dailyEndTime: '17:00',
     interviewDuration: 45,
     skipWeekends: true,
-
     includeLunchBreak: true,
-  lunchStartTime: '13:00',
-  lunchEndTime: '14:00'
-
+    lunchStartTime: '13:00',
+    lunchEndTime: '14:00'
   });
   const [generatedSchedule, setGeneratedSchedule] = useState([]);
   const [editableSchedule, setEditableSchedule] = useState([]);
@@ -62,11 +66,8 @@ const InterviewScheduler = () => {
     fetchInterviewers();
   }, []);
 
-  const toggleInterviewer = (interviewerId) => {
-    setSelectedInterviewers(prev => ({
-      ...prev,
-      [interviewerId]: !prev[interviewerId]
-    }));
+  const handleInterviewerToggle = (interviewerId) => {
+    setSelectedInterviewers(prev => toggleInterviewer(prev, interviewerId));
   };
 
   const handleScheduleGeneration = async () => {
@@ -75,25 +76,19 @@ const InterviewScheduler = () => {
       const selectedInterviewerIds = Object.keys(selectedInterviewers)
         .filter(id => selectedInterviewers[id]);
 
-      console.log("requesting schedule generation");
-
       if (!selectedInterviewerIds.length) {
         alert('Please select at least one interviewer');
         return;
       }
       
-      // console.log("2");
       const schedule = await generateInterviewSchedule(
         selectedInterviewerIds,
         selectedApplications,
         scheduleParams
       );
-      // console.log("3");
 
       setGeneratedSchedule(schedule);
-      // console.log("4");
       setEditableSchedule(schedule);
-      // console.log("5");
       setShowModal(false);
     } catch (error) {
       console.error("Schedule generation error:", error);
@@ -102,88 +97,33 @@ const InterviewScheduler = () => {
     }
   };
 
-  const handleScheduleEdit = (dayIndex, interviewIndex, updatedInterview) => {
-    const newSchedule = [...editableSchedule];
-    const startTime = new Date(updatedInterview.startTime);
-    const endTime = new Date(startTime.getTime() + scheduleParams.interviewDuration * 60000);
-    
-    newSchedule[dayIndex].interviews[interviewIndex] = {
-      ...updatedInterview,
-      startTime: startTime,
-      endTime: endTime
-    };
-    
+  const handleScheduleEditWrapper = (dayIndex, interviewIndex, updatedInterview) => {
+    const newSchedule = handleScheduleEdit(
+      editableSchedule, 
+      dayIndex, 
+      interviewIndex, 
+      updatedInterview, 
+      scheduleParams.interviewDuration
+    );
     setEditableSchedule(newSchedule);
   };
 
   const handleConfirmSchedule = async (sendEmail) => {
     try {
-      const schedules = editableSchedule[0].interviews.map(schedule => ({
-        applicationId: schedule.candidate,
-        jobPostingId: jobPostingId,
-        interviewerId: schedule.interviewer,
-        startDateTime: schedule.startTime,
-        endDateTime: schedule.endTime,
-        meetingId: schedule.meetingId,
-        joinUrl: schedule.joinUrl
-      }));
-  
+      const schedules = formatScheduleForAPI(editableSchedule, jobPostingId);
       const response = await api.post('/interviews/schedule', { schedules });
-      console.log("response from save interviews: ", response.data);
-  
+      
       if (sendEmail && response.data.success) {
+        const emailDataArray = formatEmailData(response.data.schedules);
+        const result = await sendInterviewScheduledEmail(emailDataArray);
         
-        const emailDataArray = response.data.schedules.map(schedule => {
-          // Format interviewDate
-          const formattedDate = new Date(schedule.interviewDate).toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          });
-        
-          // Format interviewStartTime
-          const [startHours, startMinutes, startSeconds] = schedule.interviewStartTime.split(':');
-          const startTime = new Date();
-          startTime.setHours(startHours, startMinutes, startSeconds);
-          const formattedStartTime = startTime.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            hour12: true 
-          });
-        
-          // Format interviewEndTime
-          const [endHours, endMinutes, endSeconds] = schedule.interviewEndTime.split(':');
-          const endTime = new Date();
-          endTime.setHours(endHours, endMinutes, endSeconds);
-          const formattedEndTime = endTime.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            hour12: true 
-          });
-        
-          // Combine start and end times
-          const formattedTimeRange = `${formattedStartTime} to ${formattedEndTime}`;
-        
-          return {
-            candidateName: schedule.candidateName,
-            email: schedule.candidateEmail,
-            jobTitle: schedule.jobTitle,
-            interviewDate: formattedDate,
-            interviewTime: formattedTimeRange,
-            meetingLink: schedule.joinUrl,
-            meetingId: schedule.meetingId,
-          };
-        });
-        
-       const result = await sendInterviewScheduledEmail(emailDataArray);
-       console.log("email sent: ", result);
-
-       if (result.results.some(r => r.status === "invalid email")) {
-        result.results
-          .filter(r => r.status === "invalid email")
-          .forEach(r => console.log("Invalid email address:", r.email));
-      }}
-  
+        if (result.results.some(r => r.status === "invalid email")) {
+          result.results
+            .filter(r => r.status === "invalid email")
+            .forEach(r => console.log("Invalid email address:", r.email));
+        }
+      }
+      
       console.log('Interviews created:', response.data);
     } catch (error) {
       console.error('Error saving interviews:', error);
@@ -194,9 +134,7 @@ const InterviewScheduler = () => {
   };
 
   if (loading) return <Loading size="lg" text="Please wait..." />;
-  if (error) {
-    return <ErrorMessage message={error} />;
-  }
+  if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="container mx-auto p-6">
@@ -206,7 +144,7 @@ const InterviewScheduler = () => {
         <InterviewersList 
           interviewers={interviewers}
           selectedInterviewers={selectedInterviewers}
-          toggleInterviewer={toggleInterviewer}
+          toggleInterviewer={handleInterviewerToggle}
         />
         <CandidatesList selectedApplications={selectedApplications} />
       </div>
@@ -224,20 +162,16 @@ const InterviewScheduler = () => {
           scheduleParams={scheduleParams}
           setScheduleParams={setScheduleParams}
           onClose={() => setShowModal(false)}
-          onGenerate={async () => {  // Add async here
-            await handleScheduleGeneration();  // Add await here
-            setShowModal(false);
-          }}
+          onGenerate={handleScheduleGeneration}
           isGenerating={isGenerating}
-
         />
       )}
 
-{editableSchedule && editableSchedule.length > 0 && (
-  <EditableSchedule
-    editableSchedule={editableSchedule}
+      {editableSchedule && editableSchedule.length > 0 && (
+        <EditableSchedule
+          editableSchedule={editableSchedule}
           interviewers={interviewers}
-          handleScheduleEdit={handleScheduleEdit}
+          handleScheduleEdit={handleScheduleEditWrapper}
           onConfirm={() => setShowConfirmation(true)}
         />
       )}
@@ -249,11 +183,11 @@ const InterviewScheduler = () => {
         />
       )}
 
-{generatedSchedule && generatedSchedule.length > 0 && (
-  <GeneratedSchedule 
-    schedule={generatedSchedule} 
-  />
-)}
+      {generatedSchedule && generatedSchedule.length > 0 && (
+        <GeneratedSchedule 
+          schedule={generatedSchedule} 
+        />
+      )}
     </div>
   );
 };

@@ -175,10 +175,14 @@ const InterviewScheduler = () => {
           };
         });
         
+       const result = await sendInterviewScheduledEmail(emailDataArray);
+       console.log("email sent: ", result);
 
-  
-        await sendInterviewScheduledEmail(emailDataArray);
-      }
+       if (result.results.some(r => r.status === "invalid email")) {
+        result.results
+          .filter(r => r.status === "invalid email")
+          .forEach(r => console.log("Invalid email address:", r.email));
+      }}
   
       console.log('Interviews created:', response.data);
     } catch (error) {

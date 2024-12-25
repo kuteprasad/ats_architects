@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Button from '../../../components/common/Button';
 import Input from '../../../components/common/Input';
+import Toast from '../../../components/common/Toast';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../services/api';
 import architectsLogo from '../../../assets/architectsLogo.png';
+import Button from '../../../components/common/Button';
 
 const CreatePosting = () => {
   const [formData, setFormData] = useState({
@@ -15,10 +15,11 @@ const CreatePosting = () => {
     applicationEndDate: '',
     jobRequirements: ''
   });
-
+  
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const navigate = useNavigate();
-  const [error, setError] = useState('');
+  // const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,18 +29,29 @@ const CreatePosting = () => {
     }));
   };
 
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    // setError('');
 
     try {
       console.log("formData: ", formData);
       // const response = await api.post('/jobs', formData);
       // console.log('Job posting created:', response.data);
-      navigate('/recruiter/dashboard');
+      showToast('Job posting created successfully! Redirecting to Home page...', 'success');
+      
+      // Navigate after a short delay to show the toast
+      setTimeout(() => {
+        navigate('/recruiter/dashboard');
+      }, 5000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error creating job posting');
+      const errorMessage = err.response?.data?.message || 'Error creating job posting';
+      // setError(errorMessage);
+      showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -48,6 +60,18 @@ const CreatePosting = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-2xl">
+        {/* Toast notification */}
+        {toast.show && (
+          <div className="fixed top-4 right-4 z-50">
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              duration={5000}
+              onClose={() => setToast({ ...toast, show: false })}
+            />
+          </div>
+        )}
+        
         <div className="flex items-center justify-center space-x-4 mb-6">
           <img
             src={architectsLogo}
@@ -73,6 +97,7 @@ const CreatePosting = () => {
             type="text"
             placeholder="Job Description"
             value={formData.jobDescription}
+          isTextArea
             onChange={handleChange}
             required
           />
@@ -113,13 +138,14 @@ const CreatePosting = () => {
             type="text"
             placeholder="Job Requirements"
             value={formData.jobRequirements}
+            isTextArea
             onChange={handleChange}
             required
           />
-
-          {error && (
+          
+          {/* {error && (
             <div className="text-red-500 text-sm text-center">{error}</div>
-          )}
+          )} */}
 
           <Button
             type="submit"

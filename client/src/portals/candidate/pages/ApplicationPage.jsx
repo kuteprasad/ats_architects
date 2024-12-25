@@ -1,78 +1,81 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import api from '../../../services/api';
-import { sendEmail } from '../../../services/emailService';
-import Button from '../../../components/common/Button';
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import api from "../../../services/api";
+import {  sendThankYouEmail } from "../../../services/emailService";
+import Button from "../../../components/common/Button";
 
 const ApplicationPage = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
-  
+
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    resume: null
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    resume: null,
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleFileChange = (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      resume: e.target.files[0]
+      resume: e.target.files[0],
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+
     setMessage(null);
 
     console.log("ksdfjs ", formData);
 
     try {
       const formPayload = new FormData();
-      formPayload.append('firstName', formData.firstName);
-      formPayload.append('lastName', formData.lastName);
+      formPayload.append("firstName", formData.firstName);
+      formPayload.append("lastName", formData.lastName);
 
-      formPayload.append('email', formData.email);
-      formPayload.append('phoneNumber', formData.phoneNumber);
-      formPayload.append('resume', formData.resume);
+      formPayload.append("email", formData.email);
+      formPayload.append("phoneNumber", formData.phoneNumber);
+      formPayload.append("resume", formData.resume);
 
       console.log("formpayload : ", formData);
 
       const res = await api.post(`/applications/${jobId}`, formPayload, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
       // Extract email data from response
-      const emailData = res.data;
+      const emailData = res.data.application;
+      console.log("emailData : ", emailData);
 
       // Send thank you email
-      // await sendEmail(emailData);
+     const response = await sendThankYouEmail(emailData);
+     console.log("response from sendEmail :", response);
 
       setMessage({ type: 'success', text: 'Application submitted and email sent successfully' });
-
-      navigate('/candidate/careers', { 
-        state: { message: 'Application submitted successfully!' }
-      });
+      
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to submit application and send email' });
-      setError(err.response?.data?.message || 'Failed to submit application');
+      setMessage({
+        type: "error",
+        text:
+          err.response?.data?.message ||
+          "Failed to submit application and send email",
+      });
+     
     } finally {
       setLoading(false);
     }
@@ -81,12 +84,13 @@ const ApplicationPage = () => {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Submit Application</h1>
-      
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+
+      {message && (
+        <div className={`border px-4 py-3 rounded mb-4 ${message.type === "success" ? "bg-green-100  border-green-400 text-green-700 " : "bg-red-100  border-red-400 text-red-700 "}`}>
+          {message.text}
         </div>
       )}
+
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -159,19 +163,23 @@ const ApplicationPage = () => {
         </div>
 
         <Button
+          type="button"
+          disabled={loading}
+          variant="primary"
+          onClick={() => navigate("/candidate/careers")}
+          // className="w-full"
+        >
+          {loading ? "wait ..." : "Go Back"}
+        </Button>
+        <Button
           type="submit"
           disabled={loading}
           variant="primary"
-          className="w-full"
+          // className="w-full"
         >
-          {loading ? 'Submitting...' : 'Submit Application'}
+          {loading ? "Submitting..." : "Submit Application"}
         </Button>
       </form>
-      {message && (
-        <div className={`mt-4 p-4 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-          {message.text}
-        </div>
-      )}
     </div>
   );
 };

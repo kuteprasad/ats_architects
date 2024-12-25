@@ -1,9 +1,9 @@
-import pool from '../config/db.js';
+import pool from "../config/db.js";
 
 export const getApplicationsByJobId = async (req, res) => {
   try {
     const { jobId } = req.params;
-    
+
     const query = `
       SELECT 
         a."applicationId",
@@ -23,28 +23,27 @@ export const getApplicationsByJobId = async (req, res) => {
 
     console.log("res ", result.rows);
 
-    const formattedApplications = result.rows.map(app => ({
+    const formattedApplications = result.rows.map((app) => ({
       applicationId: app.applicationId,
       candidateName: `${app.firstName} ${app.lastName}`,
       email: app.email,
-      applicationDate: app.applicationDate.toISOString() ,
+      applicationDate: app.applicationDate.toISOString(),
       resumeScore: app.resumeScore,
-      resume: app.resume // BLOB data
+      resume: app.resume, // BLOB data
     }));
 
     console.log("formated ", formattedApplications);
 
     res.status(200).json({
       success: true,
-      applications: formattedApplications
+      applications: formattedApplications,
     });
-
   } catch (error) {
-    console.error('Error in getApplicationsByJobId:', error);
+    console.error("Error in getApplicationsByJobId:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch applications',
-      error: error.message
+      message: "Failed to fetch applications",
+      error: error.message,
     });
   }
 };
@@ -55,12 +54,12 @@ export const createApplication = async (req, res) => {
     const { firstName, lastName, email, phoneNumber } = req.body;
     const resume = req.file;
 
-    console.log("boday ",  req.body);
+    console.log("boday ", req.body);
 
     if (!firstName || !lastName || !email || !phoneNumber || !resume) {
       return res.status(400).json({
         success: false,
-        message: 'All fields and resume are required'
+        message: "All fields and resume are required",
       });
     }
 
@@ -70,10 +69,10 @@ export const createApplication = async (req, res) => {
       FROM "candidates" 
       WHERE "email" = $1
     `;
-    
+
     let candidateResult = await pool.query(checkCandidateQuery, [email]);
     let candidateId;
-    console.log("candidate id" , candidateResult.rows[0]);
+    console.log("candidate id", candidateResult.rows[0]);
 
     if (candidateResult.rows.length > 0) {
       // Use existing candidate
@@ -96,46 +95,54 @@ export const createApplication = async (req, res) => {
         firstName,
         lastName,
         email,
-        phoneNumber
+        phoneNumber,
       ]);
-       candidateId = candidateResult.rows[0].candidateId;
+      candidateId = candidateResult.rows[0].candidateId;
       console.log("candidate", candidateResult.rows[0]);
     }
 
     console.log("cd 1", candidateId);
 
     // Create application
-    const applicationQuery = `
-      INSERT INTO applications (
-        "jobPostingId",
-        "candidateId",
-        "applicationDate",
-        "applicationStatus",
-        "resume",
-        "resumeScore"
-      )
-      VALUES ($1, $2, CURRENT_TIMESTAMP, 'PENDING', $3, NULL)
-      RETURNING *
-    `;
+    const insertQuery = `
+  INSERT INTO applications (
+    "jobPostingId",
+    "candidateId",
+    "applicationDate",
+    "applicationStatus",
+    "resume"
+  )
+  VALUES ($1, $2, CURRENT_TIMESTAMP, 'PENDING', $3);
+`;
 
-    const applicationResult = await pool.query(applicationQuery, [
-      jobId,
-      candidateId,
-      resume.buffer
-    ]);
+    const selectQuery = `
+  SELECT "jobTitle"
+  FROM "jobPostings"
+  WHERE "jobPostingId" = $1;
+`;
+
+    // Execute the queries in sequence
+    await pool.query(insertQuery, [jobId, candidateId, resume.buffer]);
+    const result = await pool.query(selectQuery, [jobId]);
+    const jobTitle = result.rows[0].jobTitle;
+
+    console.log("Job Title:", jobTitle);
 
     res.status(201).json({
       success: true,
-      message: 'Application submitted successfully',
-      application: applicationResult.rows[0]
+      message: "Application submitted successfully",
+      application: {
+        candidateName: `${firstName} ${lastName}`,
+        jobTitle,
+        email
+      },
     });
-
   } catch (error) {
-    console.error('Error in createApplication:', error);
+    console.error("Error in createApplication:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to submit application',
-      error: error.message
+      message: "Failed to submit application",
+      error: error.message,
     });
   }
 };

@@ -36,18 +36,18 @@ const CreatePosting = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    // setError('');
 
     try {
       console.log("formData: ", formData);
       // const response = await api.post('/jobs', formData);
       // console.log('Job posting created:', response.data);
-      showToast('Job posting created successfully!', 'success');
+      showToast('Job posting created successfully! Redirecting to Home page...', 'success');
       
       // Navigate after a short delay to show the toast
       setTimeout(() => {
         navigate('/recruiter/dashboard');
-      }, 2000);
+      }, 5000);
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Error creating job posting';
       // setError(errorMessage);

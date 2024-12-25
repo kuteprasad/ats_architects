@@ -11,6 +11,7 @@ import { GeneratedSchedule } from '../components/InterviewScheduler/GeneratedSch
 import { generateInterviewSchedule } from '../components/InterviewScheduler/scheduleGenerator';
 import Loading from '../../../components/common/Loading';
 import ErrorMessage from '../../../components/common/ErrorMessage';
+import { sendInterviewScheduledEmail } from '../../../services/emailService';
 
 const InterviewScheduler = () => {
   const location = useLocation();
@@ -115,40 +116,77 @@ const InterviewScheduler = () => {
     setEditableSchedule(newSchedule);
   };
 
-  const handleConfirmSchedule = async () => {
-
+  const handleConfirmSchedule = async (sendEmail) => {
     try {
-    console.log('Final Schedule:', editableSchedule[0].interviews);
-    // Sending to backend
-
-    const schedules = editableSchedule[0].interviews.map(schedule => ({
-      applicationId: schedule.candidate,
-      jobPostingId: jobPostingId,
-      interviewerId: schedule.interviewer,
-      startDateTime: schedule.startTime,
-      endDateTime: schedule.endTime,
-      meetingId: schedule.meetingId,
-      joinUrl: schedule.joinUrl
-    }));
-
-    console.log("formated schedules , ", schedules );
-
-    const response = await api.post('/interviews/schedule', {
-      schedules
-    });
-
-    console.log('Interviews created:', response.data);
+      const schedules = editableSchedule[0].interviews.map(schedule => ({
+        applicationId: schedule.candidate,
+        jobPostingId: jobPostingId,
+        interviewerId: schedule.interviewer,
+        startDateTime: schedule.startTime,
+        endDateTime: schedule.endTime,
+        meetingId: schedule.meetingId,
+        joinUrl: schedule.joinUrl
+      }));
   
-    
-  } catch (error) {
-    console.error('Error saving interviews:', error);
-    
-    alert('Failed to save interviews');
- 
-  } finally {   
-    setShowConfirmation(false);
-  }
+      const response = await api.post('/interviews/schedule', { schedules });
+      console.log("response from save interviews: ", response.data);
+  
+      if (sendEmail && response.data.success) {
+        
+        const emailDataArray = response.data.schedules.map(schedule => {
+          // Format interviewDate
+          const formattedDate = new Date(schedule.interviewDate).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+        
+          // Format interviewStartTime
+          const [startHours, startMinutes, startSeconds] = schedule.interviewStartTime.split(':');
+          const startTime = new Date();
+          startTime.setHours(startHours, startMinutes, startSeconds);
+          const formattedStartTime = startTime.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: true 
+          });
+        
+          // Format interviewEndTime
+          const [endHours, endMinutes, endSeconds] = schedule.interviewEndTime.split(':');
+          const endTime = new Date();
+          endTime.setHours(endHours, endMinutes, endSeconds);
+          const formattedEndTime = endTime.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: true 
+          });
+        
+          // Combine start and end times
+          const formattedTimeRange = `${formattedStartTime} to ${formattedEndTime}`;
+        
+          return {
+            candidateName: schedule.candidateName,
+            email: schedule.candidateEmail,
+            jobTitle: schedule.jobTitle,
+            interviewDate: formattedDate,
+            interviewTime: formattedTimeRange,
+            meetingLink: schedule.joinUrl,
+            meetingId: schedule.meetingId,
+          };
+        });
+        
 
+  
+        await sendInterviewScheduledEmail(emailDataArray);
+      }
+  
+      console.log('Interviews created:', response.data);
+    } catch (error) {
+      console.error('Error saving interviews:', error);
+      alert('Failed to save interviews');
+    } finally {
+      setShowConfirmation(false);
+    }
   };
 
   if (loading) return <Loading size="lg" text="Please wait..." />;

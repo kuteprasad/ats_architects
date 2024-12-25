@@ -1,13 +1,13 @@
 import api from "./api";
 
 export const sendThankYouEmail = async (emailData) => {
-  const formData = {
+  const formData =[{
     templateName: 'THANK_YOU',
     recipients: [{ name:emailData.candidateName, email: emailData.email}],
     variables: {
       position: emailData.jobTitle
     }
-  }
+  }]
 
   // sample data to send 
   // {
@@ -27,24 +27,26 @@ export const sendThankYouEmail = async (emailData) => {
   return res; 
 }
 
-export const sendInterviewScheduledEmail = async (emailData) => {
-
-  const formData = 
-  {
-   templateName: 'INTERVIEW_SCHEDULED',
-   recipients: [{ name:emailData.candidateName, email: emailData.email}],
-   variables: {
-    position: emailData.jobTitle,
+export const sendInterviewScheduledEmail = async (emailDataArray) => {
+  console.log("emailDataArray : ", emailDataArray);
+  const formattedData = emailDataArray.map(emailData => ({
+    templateName: 'INTERVIEW_SCHEDULED',
+    recipients: [{
+      name: emailData.candidateName,
+      email: emailData.email
+    }],
+    variables: {
+      position: emailData.jobTitle,
       date: emailData.interviewDate,
-      time:  emailData.interviewTime,
+      time: emailData.interviewTime,
       meetingLink: emailData.meetingLink,
       meetingId: emailData.meetingId
-  }
-   
-  }
-  
-  const res = await sendEmail(formData);
+    }
+  }));
+
+  const res = await sendEmail(formattedData);
   return res;
+
   // sample data to send
   // {
   //   "templateName": "INTERVIEW_SCHEDULED",
@@ -62,19 +64,18 @@ export const sendInterviewScheduledEmail = async (emailData) => {
   //     "meetingId": "123 456 789"
   //   }
   // }
-
-
 }
+
 export const sendFinalStatusEmail = async (emailData) => {
 
-  const formData = {
+  const formData = [{
     templateName: 'FINAL_STATUS',
     recipients: [{ name:emailData.candidateName, email: emailData.email}],
     variables: {
       position: emailData.jobTitle,
       status: emailData.status
     }
-  }
+  }]
   const res = await sendEmail(formData);
   return res;
 

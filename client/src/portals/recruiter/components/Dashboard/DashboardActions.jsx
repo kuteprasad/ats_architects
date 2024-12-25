@@ -1,6 +1,7 @@
-
-import LoadingSpinner from '../../../../components/common/LoadingSpinner';
+// components/Dashboard/DashboardActions.js
+import React from 'react';
 import Button from '../../../../components/common/Button';
+import Toast from '../../../../components/common/Toast';
 
 
 const DashboardActions = ({ 
@@ -14,108 +15,96 @@ const DashboardActions = ({
   scoreLoading,
   emailProcessing,
   scoreMessage,
-  emailMessage 
+  emailMessage,
+  onClearScoreMessage,
+  onClearEmailMessage 
 }) => {
   return (
-    <div className="mb-6 flex items-center gap-4">
-      {permissions.canCreateJobs && (
-        <Button onClick={onCreateJob} variant="primary" size="md">
-          Create Job Posting
-        </Button>
-      )}
+    <div className="mb-6">
+      <div className="flex items-center gap-4">
+        {permissions.canCreateJobs && (
+          <Button 
+            onClick={onCreateJob} 
+            variant="primary" 
+            size="md"
+          >
+            Create Job Posting
+          </Button>
+        )}
 
-      {permissions.canScoreResumes && (
-        <div>
+        {permissions.canScoreResumes && (
           <Button
             onClick={onScoreResumes}
-            disabled={scoreLoading}
+            loading={scoreLoading}
+            loadingChildren="Processing Resumes..."
             variant="primary"
-            className="flex items-center gap-2"
           >
-            {scoreLoading ? (
-              <>
-                <LoadingSpinner />
-                Processing Resumes...
-              </>
-            ) : (
-              "Update Resume Scores"
-            )}
+            Update Resume Scores
           </Button>
-        </div>
-      )}
+        )}
 
-      {permissions.canDoDbSeeding && (
-        <Button onClick={onSeeding} variant="primary" size="md">
-          Seed Database
-        </Button>
-      )}
+        {permissions.canDoDbSeeding && (
+          <Button 
+            onClick={onSeeding} 
+            variant="primary" 
+            size="md"
+          >
+            Seed Database
+          </Button>
+        )}
 
-      {permissions.canProcessEmails && (
-        <div>
+        {permissions.canProcessEmails && (
           <Button
             onClick={onProcessEmails}
+            loading={emailProcessing}
+            loadingChildren="Processing Emails..."
             variant="primary"
             size="md"
-            disabled={emailProcessing}
-            className="flex items-center gap-2"
           >
-            {emailProcessing ? (
-              <>
-                <LoadingSpinner />
-                Processing Emails...
-              </>
-            ) : (
-              "Check Email for new Applications"
-            )}
+            Check Email for new Applications
           </Button>
-        </div>
-      )}
+        )}
 
-      {permissions.canHandleAnalytics && (
-        <Button 
-          onClick={onAnalytics} 
-          variant="primary" 
-          size="md"
-          className='ml-4'
-        >
-          View Analytics
-        </Button>
-      )}
+        {permissions.canHandleAnalytics && (
+          <Button 
+            onClick={onAnalytics} 
+            variant="primary" 
+            size="md"
+            className='ml-4'
+          >
+            View Analytics
+          </Button>
+        )}
 
-      {permissions.canHaveInterviews && (
-        <Button
-          onClick={onMyInterview}
-          variant="secondary"
-          size="md"
-          className="ml-4"
-        >
-          My Interviews
-        </Button>
-      )}
+        {permissions.canHaveInterviews && (
+          <Button
+            onClick={onMyInterview}
+            variant="secondary"
+            size="md"
+            className="ml-4"
+          >
+            My Interviews
+          </Button>
+        )}
+      </div>
 
-      {scoreMessage && (
-        <div
-          className={`mt-4 p-4 rounded ${
-            scoreMessage.type === "success"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {scoreMessage.text}
-        </div>
-      )}
-      
-      {emailMessage && (
-        <div
-          className={`mt-4 p-4 rounded ${
-            emailMessage.type === "success"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {emailMessage.text}
-        </div>
-      )}
+      <div className="fixed bottom-4 right-4 space-y-2 z-50">
+        {scoreMessage && (
+          <Toast
+            message={scoreMessage.text}
+            type={scoreMessage.type}
+            onClose={onClearScoreMessage}
+          />
+        )}
+        
+        {emailMessage && (
+          <Toast
+            message={emailMessage.text}
+            type={emailMessage.type}
+            onClose={onClearEmailMessage}
+          />
+        )}
+      </div>
     </div>
   );
 };

@@ -123,6 +123,14 @@ const Dashboard = () => {
     });
   };
 
+  const handleClearScoreMessage = () => {
+    setScoreMessage(null);
+  };
+  
+  const handleClearEmailMessage = () => {
+    setEmailMessage(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader
@@ -148,6 +156,8 @@ const Dashboard = () => {
           emailProcessing={emailProcessing}
           scoreMessage={scoreMessage}
           emailMessage={emailMessage}
+          onClearScoreMessage={handleClearScoreMessage}
+          onClearEmailMessage={handleClearEmailMessage}
         />
 
         <div className="grid grid-cols-1 gap-6">

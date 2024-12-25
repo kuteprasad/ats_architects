@@ -79,7 +79,7 @@ const DashboardActions = ({
         {permissions.canHaveInterviews && (
           <Button
             onClick={onMyInterview}
-            variant="secondary"
+            variant="primary"
             size="md"
             className="ml-4"
           >

@@ -87,9 +87,11 @@ export const processEmails = async (req, res) => {
 export const sendEmails = async (req, res) => {
   try {
     const { recipients, templateName, variables } = req.body;
+    console.log("data: ", req.body);
     const { gmail } = await getGoogleServices();
     
     const template = EMAIL_TEMPLATES[templateName];
+    console.log("template ", template);
     if (!template) {
       throw new Error('Invalid template name');
     }

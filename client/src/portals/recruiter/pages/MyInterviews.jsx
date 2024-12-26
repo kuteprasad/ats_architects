@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../services/api';
-import InterviewList from '../components/InterviewList';
-import InterviewFeedback from '../components/InterviewFeedback';
-import PastInterviews from '../components/PastInterviews';
 import Loading from '../../../components/common/Loading';
 import ErrorMessage from '../../../components/common/ErrorMessage';
+
+import InterviewList from '../components/MyInterview/InterviewList';
+import PastInterviews from '../components/MyInterview/PastInterviews';
+import InterviewFeedback from '../components/MyInterview/InterviewFeedback';
 
 const MyInterviews = () => {
   const { user } = useAuth();
@@ -159,7 +160,7 @@ const MyInterviews = () => {
         <div className="space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold mb-4">Scheduled Interviews</h2>
-            <InterviewList 
+            <InterviewList
               interviews={currentInterviews}
               onSelect={handleInterviewSelect}
               getStatusColor={getStatusColor}
@@ -167,7 +168,7 @@ const MyInterviews = () => {
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
-            <PastInterviews 
+            <PastInterviews
               interviews={pastInterviews}
               showPast={showPastInterviews}
               onToggle={() => setShowPastInterviews(!showPastInterviews)}

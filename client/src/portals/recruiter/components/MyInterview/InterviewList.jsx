@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '../../../components/common/Button';
+import Button from '../../../../components/common/Button';
 
 const formatDateTime = (date, time) => {
   try {

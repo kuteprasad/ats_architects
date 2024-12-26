@@ -1,7 +1,7 @@
 import React from 'react';
 import StarRating from './StarRating';
-import Button from '../../../components/common/Button';
-import ResumeViewer from '../../../components/common/ResumeViewer';
+import Button from '../../../../components/common/Button';
+import ResumeViewer from '../../../../components/common/ResumeViewer';
 
 const formatDateTime = (date, time) => {
   try {

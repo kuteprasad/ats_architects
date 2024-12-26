@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from '../../../contexts/AuthContext';
-import { hasPermission } from '../../../utils/permissions';
+import {
+  useParams,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
+import { hasPermission } from "../../../utils/permissions";
 import api from "../../../services/api";
 import Button from "../../../components/common/Button";
-import ResumeViewer from '../../../components/common/ResumeViewer';
+import ResumeViewer from "../../../components/common/ResumeViewer";
+import Loading from "../../../components/common/Loading";
+import ErrorMessage from "../../../components/common/ErrorMessage";
+import { CalendarIcon } from '@heroicons/react/solid';
 
 const ApplicationsPage = () => {
   const { jobId } = useParams();
+  const location = useLocation();
+  const jobTitle = location.state?.jobTitle;
   const { user } = useAuth();
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
@@ -27,18 +37,19 @@ const ApplicationsPage = () => {
   // Add state for select all
   const [selectAll, setSelectAll] = useState(false);
 
-  const canViewApplications = hasPermission(user?.role, 'view_applications');
-  const canScheduleInterviews = hasPermission(user?.role, 'schedule_interview');
+  const canViewApplications = hasPermission(user?.role, "view_applications");
+  const canScheduleInterviews = hasPermission(user?.role, "schedule_interview");
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchApplications = async () => {
       if (!canViewApplications) {
-        setError('Unauthorized to view applications');
+        setError("Unauthorized to view applications");
         setLoading(false);
         return;
       }
+      // return;
 
       try {
         setLoading(true);
@@ -146,17 +157,20 @@ const ApplicationsPage = () => {
     Object.values(selectedCandidates).filter(Boolean).length;
 
   const handleScheduleInterviews = () => {
-    const selectedIds = Object.keys(selectedCandidates)
-      .filter(id => selectedCandidates[id]);
-    
-    navigate('/recruiter/interview-schedular', {
-      state: { selectedApplications: selectedIds,
-        jobPostingId: jobId  }
+    const selectedIds = Object.keys(selectedCandidates).filter(
+      (id) => selectedCandidates[id]
+    );
+
+    navigate("/recruiter/interview-schedular", {
+      state: { selectedApplications: selectedIds, jobPostingId: jobId },
     });
   };
 
-  if (loading) return <div className="p-6">Loading applications...</div>;
-  if (error) return <div className="p-6 text-red-500">{error}</div>;
+  if (loading) return <Loading size="lg" text="Loading Applications..." />;
+
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
 
   if (!canViewApplications) {
     return <Navigate to="/unauthorized" />;
@@ -165,23 +179,34 @@ const ApplicationsPage = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Applications for Job ID: {jobId}</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm">Selected: {selectedCount} candidates</span>
-          {Object.values(selectedCandidates).some(Boolean) && canScheduleInterviews && (
-            <div className="mt-4 flex justify-end">
-              <Button
-                onClick={handleScheduleInterviews}
-                variant="primary"
-                size="md"
-              >
-                Schedule Interviews ({Object.values(selectedCandidates).filter(Boolean).length})
-              </Button>
-            </div>
-          )}
-        </div>
+        <h1 className="text-2xl ">
+          Applications for <span className="font-bold"> {jobTitle} </span> 
+        </h1>
+    
 
-        
+<div className="flex items-center gap-4">
+  {canScheduleInterviews && (
+    <div className="mt-4 flex justify-end">
+      <Button
+        onClick={handleScheduleInterviews}
+        variant="primary"
+        size="md"
+        disabled={selectedCount === 0}
+      >
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5 text-white" />
+            <span>Schedule Interviews</span>
+          </div>
+          <span className="text-xs font-thin text-white mt-1">
+            Selected: {selectedCount} candidates
+          </span>
+        </div>
+      </Button>
+    </div>
+  )}
+</div>
+
       </div>
 
       {/* Filter Section */}
@@ -288,7 +313,7 @@ const ApplicationsPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredApplications.map((application) => (
+              {filteredApplications.map((application, index) => (
                 <tr key={application.applicationId}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <input
@@ -300,7 +325,11 @@ const ApplicationsPage = () => {
                         toggleCandidateSelection(application.applicationId)
                       }
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
+                    /> 
+                    <span className="ml-2   text-sm text-gray-500">
+
+                    {index + 1}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
@@ -314,7 +343,9 @@ const ApplicationsPage = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">
-                      {new Date(application.applicationDate).toLocaleDateString()}
+                      {new Date(
+                        application.applicationDate
+                      ).toLocaleDateString()}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -332,8 +363,6 @@ const ApplicationsPage = () => {
           </table>
         </div>
       </div>
-
-      
     </div>
   );
 };

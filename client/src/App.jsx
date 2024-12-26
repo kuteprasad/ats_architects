@@ -6,11 +6,13 @@ import RecruiterRoutes from './routes/RecruiterRoutes';
 import Login from './components/auth/LoginForm';
 import NotFound from './portals/shared/NotFound';
 import RegistrationForm from './components/auth/RegistrationForm';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+      <Toaster />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import Button from '../../../../components/common/Button';
+import React, { useState } from "react";
+import Button from "../../../../components/common/Button";
 
-export const ConfirmationModal = ({ onConfirm, onCancel }) => {
+export const ConfirmationModal = ({ onConfirm, onCancel, confirmLoading }) => {
   const [sendEmail, setSendEmail] = useState(true);
 
   const handleConfirm = () => {
@@ -13,7 +13,7 @@ export const ConfirmationModal = ({ onConfirm, onCancel }) => {
       <div className="bg-white p-6 rounded-lg w-96">
         <h3 className="text-lg font-semibold mb-4">Confirm Schedule</h3>
         <p>Are you sure you want to confirm this interview schedule?</p>
-        
+
         <div className="mt-4">
           <label className="flex items-center space-x-2">
             <input
@@ -30,7 +30,7 @@ export const ConfirmationModal = ({ onConfirm, onCancel }) => {
           <Button onClick={onCancel} variant="secondary">
             Cancel
           </Button>
-          <Button onClick={handleConfirm} variant="primary">
+          <Button loading={confirmLoading} disabled={confirmLoading} loadingChildren="Sending Email..." onClick={handleConfirm} variant="primary">
             Confirm
           </Button>
         </div>

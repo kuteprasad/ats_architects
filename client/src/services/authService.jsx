@@ -1,8 +1,8 @@
 import api from './api';
 
-export const login = async (email, password) => {
+export const loginService = async (email, password) => {
   try {
-    // return true;
+
     console.log("email & passowrd recieived:  ", email, password);
 
     const response = await api.post('/auth/login', { email, password });
@@ -10,6 +10,8 @@ export const login = async (email, password) => {
     // Store token and user info
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
+    
+
 
     console.log("response in authservice: ", response.data);
     
@@ -35,5 +37,11 @@ export const logout = () => {
 };
 
 export const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem('user'));
+  try {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  } catch (error) {
+    console.error("Error parsing user data from localStorage:", error);
+    return null;
+  }
 };

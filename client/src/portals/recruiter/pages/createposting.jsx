@@ -86,7 +86,7 @@ const CreatePosting = () => {
             value={formData.location}
             onChange={handleChange}
             required
-            isTextArea
+            
           />
           <Input
             label="Application End Date"

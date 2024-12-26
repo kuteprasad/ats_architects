@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 import { authService } from '../services/authService.js';
 
@@ -21,7 +20,7 @@ export const register = async (req, res) => {
 
     // Create a new user
     const insertUserQuery = `
-      INSERT INTO users (firstName, lastName, email, password, role)
+      INSERT INTO users ("firstName", "lastName", email, password, role)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
@@ -70,5 +69,42 @@ export const login = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+export const getInterviewers = async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+        "userId",
+        "firstName",
+        "lastName",
+        email
+      FROM users 
+      WHERE role = 'interviewer'
+    `;
+
+    const result = await pool.query(query);
+
+    const interviewers = result.rows.map(interviewer => ({
+      id: interviewer.userId,
+      name: `${interviewer.firstName} ${interviewer.lastName}`,
+      email: interviewer.email,
+      role: interviewer.role
+    }));
+
+    res.status(200).json({
+      success: true,
+      interviewers: interviewers
+    });
+
+  } catch (error) {
+    console.error('Error fetching interviewers:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch interviewers',
+      error: error.message
+    });
   }
 };

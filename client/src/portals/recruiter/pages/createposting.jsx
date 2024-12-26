@@ -4,6 +4,7 @@ import Toast from '../../../components/common/Toast';
 import { useNavigate } from 'react-router-dom';
 import architectsLogo from '../../../assets/architectsLogo.png';
 import Button from '../../../components/common/Button';
+import api from '../../../services/api';
 
 const CreatePosting = () => {
   const [formData, setFormData] = useState({
@@ -40,8 +41,8 @@ const CreatePosting = () => {
 
     try {
       console.log("formData: ", formData);
-      // const response = await api.post('/jobs', formData);
-      // console.log('Job posting created:', response.data);
+      const response = await api.post('/jobs', formData);
+      console.log('Job posting created:', response.data);
       showToast('Job posting created successfully! Redirecting to Home page...', 'success');
       
       // Navigate after a short delay to show the toast

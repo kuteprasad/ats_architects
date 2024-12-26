@@ -18,6 +18,7 @@ import {
   formatScheduleForAPI, 
   formatEmailData 
 } from '../../../utils/InterviewSchedularUtils';
+import { toast } from 'react-hot-toast';
 
 const InterviewScheduler = () => {
   const location = useLocation();
@@ -26,6 +27,7 @@ const InterviewScheduler = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [scheduleParams, setScheduleParams] = useState({
     startDate: '',
     endDate: '',
@@ -110,6 +112,7 @@ const InterviewScheduler = () => {
 
   const handleConfirmSchedule = async (sendEmail) => {
     try {
+      setConfirmLoading(true);
       const schedules = formatScheduleForAPI(editableSchedule, jobPostingId);
       const response = await api.post('/interviews/schedule', { schedules });
       
@@ -120,15 +123,35 @@ const InterviewScheduler = () => {
         if (result.results.some(r => r.status === "invalid email")) {
           result.results
             .filter(r => r.status === "invalid email")
-            .forEach(r => console.log("Invalid email address:", r.email));
+            .forEach(r => {
+              console.log("Invalid email address:", r.email);
+              toast.error(`Invalid email: ${r.email}`, {
+                duration: 5000,
+                position: 'top-right',
+              });
+            });
+        } else {
+          toast.success('Interviews scheduled and emails sent successfully', {
+            duration: 5000,
+            position: 'top-right',
+          });
         }
+      } else {
+        toast.success('Interviews scheduled successfully', {
+          duration: 5000,
+          position: 'top-right',
+        });
       }
       
       console.log('Interviews created:', response.data);
     } catch (error) {
       console.error('Error saving interviews:', error);
-      alert('Failed to save interviews');
+      toast.error('Failed to save interviews', {
+        duration: 5000,
+        position: 'top-right',
+      });
     } finally {
+      setConfirmLoading(false);
       setShowConfirmation(false);
     }
   };
@@ -180,6 +203,7 @@ const InterviewScheduler = () => {
         <ConfirmationModal
           onConfirm={handleConfirmSchedule}
           onCancel={() => setShowConfirmation(false)}
+          confirmLoading={confirmLoading}
         />
       )}
 

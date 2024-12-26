@@ -5,6 +5,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { hasPermission } from "../../../utils/permissions";
 import api from "../../../services/api";
 import architectsLogo from '../../../assets/architectsLogo.png';
+// import architectsLogo3 from '../../../assets/architectsLogo3.png';
 
 import DashboardHeader from "../components/Dashboard/DashboardHeader";
 import DashboardActions from "../components/Dashboard/DashboardActions";

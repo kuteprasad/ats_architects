@@ -73,6 +73,7 @@ const InterviewScheduler = () => {
   };
 
   const handleScheduleGeneration = async () => {
+    console.log("generate shedule clicked ")
     setIsGenerating(true);
     try {
       const selectedInterviewerIds = Object.keys(selectedInterviewers)

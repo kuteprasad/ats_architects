@@ -17,7 +17,7 @@ dotenv.config();
 // Suppress deprecation warnings
 process.env.NODE_NO_WARNINGS = '1';
 
-const app = express();
+export const app = express();
 const port = process.env.PORT || 3001;
 
 // Middleware

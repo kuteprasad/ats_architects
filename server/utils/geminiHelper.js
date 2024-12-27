@@ -25,16 +25,23 @@ export async function analyzeResume(content, extractDetails = false) {
         ${content}
         
         Required fields:
-        - First Name
-        - Last Name
-        - Email
-        - Phone Number
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
         
         Return as JSON.
       `;
 
       const response = await getGeminiResponse(prompt);
-      return JSON.parse(response);
+      
+      // Clean the response to ensure it's a valid JSON format
+      const cleanedResponse = response.replace(/```json|```/g, '').trim();
+      
+      // Parse the cleaned JSON response
+      const result = JSON.parse(cleanedResponse);
+      return result;
+
     } else {
       const prompt = `
         Analyze if this content is a valid resume:

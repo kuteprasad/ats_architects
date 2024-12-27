@@ -33,7 +33,7 @@ export const createTables = async (req, res) => {
       "firstName" VARCHAR(100),
       "lastName" VARCHAR(100),
       "email" VARCHAR(255) UNIQUE,
-      "phoneNumber" VARCHAR(10) DEFAULT NULL
+      "phoneNumber" VARCHAR(20) DEFAULT NULL
     );
     CREATE TABLE IF NOT EXISTS "users" (
       "userId" SERIAL PRIMARY KEY,

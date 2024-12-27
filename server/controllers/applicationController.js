@@ -53,7 +53,9 @@ export const createApplication = async (req, res) => {
     const { jobId } = req.params;
     const { firstName, lastName, email, phoneNumber } = req.body;
     const resume = req.file;
+    
 
+    console.log("jobId ", jobId);
     console.log("boday ", req.body);
 
     if (!firstName || !lastName || !email || !phoneNumber || !resume) {
@@ -72,12 +74,12 @@ export const createApplication = async (req, res) => {
 
     let candidateResult = await pool.query(checkCandidateQuery, [email]);
     let candidateId;
-    console.log("candidate id", candidateResult.rows[0]);
+    // console.log("candidate id if already exists: ", candidateResult.rows[0]);
 
     if (candidateResult.rows.length > 0) {
       // Use existing candidate
-      console.log("dkslfjd");
       candidateId = candidateResult.rows[0].candidateId;
+      console.log("candidate id if already exists: ", candidateId);
     } else {
       // Create new candidate
       const createCandidateQuery = `
@@ -98,10 +100,11 @@ export const createApplication = async (req, res) => {
         phoneNumber,
       ]);
       candidateId = candidateResult.rows[0].candidateId;
-      console.log("candidate", candidateResult.rows[0]);
+  
+      console.log("candidate id if new: ", candidateId);
     }
 
-    console.log("cd 1", candidateId);
+    // console.log("cd 1", candidateId);
 
     // Create application
     const insertQuery = `
@@ -126,7 +129,8 @@ export const createApplication = async (req, res) => {
     const result = await pool.query(selectQuery, [jobId]);
     const jobTitle = result.rows[0].jobTitle;
 
-    console.log("Job Title:", jobTitle);
+    // console.log("Job Title:", jobTitle);
+    console.log("result of create Application: ", result.rows[0]);
 
     res.status(201).json({
       success: true,

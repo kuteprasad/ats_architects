@@ -58,6 +58,7 @@ export const createJob = async (req, res) => {
       message: "Job posting created successfully",
       job: createdJob,
     });
+    console.log("Job created successfully", createdJob);
   } catch (error) {
     console.error("Error in createJob:", error);
     res.status(500).json({

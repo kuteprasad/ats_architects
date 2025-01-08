@@ -12,6 +12,7 @@ const DashboardActions = ({
   onScoreResumes,
   onAnalytics,
   onMyInterview,
+  onCandidatesHistory,
   scoreLoading,
   emailProcessing,
   scoreMessage,
@@ -84,6 +85,17 @@ const DashboardActions = ({
             className="ml-4"
           >
             My Interviews
+          </Button>
+        )}
+        
+        {permissions.canCandidatesHistory && (
+          <Button
+            onClick={onCandidatesHistory}
+            variant="primary"
+            size="md"
+            className="ml-4"
+          >
+            Candidates History
           </Button>
         )}
       </div>

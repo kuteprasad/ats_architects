@@ -83,6 +83,9 @@ const Dashboard = () => {
   const handleMyInterview = () => {
     navigate("/recruiter/my-interviews");
   };
+  const handleCandidatesHistory = () => {
+    navigate("/recruiter/candidateHistory");
+  };
 
   const handleScoreResumes = async () => {
     setLoading(true);
@@ -153,6 +156,7 @@ const Dashboard = () => {
           onScoreResumes={handleScoreResumes}
           onAnalytics={handleAnalytics}
           onMyInterview={handleMyInterview}
+          onCandidatesHistory={handleCandidatesHistory}
           scoreLoading={scoreLoading}
           emailProcessing={emailProcessing}
           scoreMessage={scoreMessage}

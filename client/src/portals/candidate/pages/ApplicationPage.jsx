@@ -59,14 +59,14 @@ const ApplicationPage = () => {
       });
 
       // Extract email data from response
-      const emailData = res.data.application;
-      console.log("emailData : ", emailData);
+      // const emailData = res.data.application;
+      // console.log("emailData : ", emailData);
 
       // Send thank you email
-     const response = await sendThankYouEmail(emailData);
-     console.log("response from sendEmail :", response);
+    //  const response = await sendThankYouEmail(emailData);
+    //  console.log("response from sendEmail :", response);
 
-      setMessage({ type: 'success', text: 'Application submitted and email sent successfully' });
+      setMessage({ type: 'success', text: 'Application submitted' });
       
     } catch (err) {
       setMessage({

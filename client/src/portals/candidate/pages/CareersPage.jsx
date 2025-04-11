@@ -4,6 +4,7 @@ import api from "../../../services/api";
 import {  useNavigate } from "react-router-dom";
 import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
+import CareerHeader from "./compenents/CareersPageHeader";
 
 const CareersPage = () => {
   const navigate = useNavigate();
@@ -66,7 +67,10 @@ const CareersPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8">Careers</h1>
+      <div className="container mx-auto mb-4">
+        <CareerHeader/>
+      </div>
+      {/* <h1 className="text-3xl font-bold mb-8">Careers</h1> */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {jobs.map((job) => (

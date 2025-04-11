@@ -76,6 +76,17 @@ const DashboardActions = ({
           </Button>
         )}
 
+        {permissions.canSeeCandidateHistory && (
+          <Button 
+            onClick={onAnalytics} 
+            variant="primary" 
+            size="md"
+            className='ml-4'
+          >
+            See Candidate History
+          </Button>
+        )}
+
         {permissions.canHaveInterviews && (
           <Button
             onClick={onMyInterview}

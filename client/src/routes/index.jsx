@@ -9,6 +9,7 @@ const MainRoutes = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<Register />} />
       {/* Add more public routes as needed */}
     </Routes>
   );

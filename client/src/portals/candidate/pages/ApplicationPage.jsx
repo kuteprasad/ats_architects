@@ -82,8 +82,9 @@ const ApplicationPage = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Submit Application</h1>
+    <div className="mx-auto p-6 flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-2xl">
+      <h1 className="text-2xl font-bold mb-6">Application Form</h1>
 
       {message && (
         <div className={`border px-4 py-3 rounded mb-4 ${message.type === "success" ? "bg-green-100  border-green-400 text-green-700 " : "bg-red-100  border-red-400 text-red-700 "}`}>
@@ -181,6 +182,7 @@ const ApplicationPage = () => {
         </Button>
       </form>
     </div>
+  </div>
   );
 };
 

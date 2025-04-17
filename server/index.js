@@ -18,7 +18,7 @@ dotenv.config();
 process.env.NODE_NO_WARNINGS = '1';
 
 const app = express();
-const port = process.env.PORT || 3001;
+ const port = process.env.PORT ||3001 ;
 
 // Middleware
 app.use(

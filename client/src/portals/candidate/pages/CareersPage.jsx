@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import Button from "../../../components/common/Button";
 import api from "../../../services/api";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
+import { ArrowLeft } from "lucide-react";
+import architectsLogo from "../../../assets/architectsLogo.png";
 
 const CareersPage = () => {
   const navigate = useNavigate();
-  
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,14 +61,51 @@ const CareersPage = () => {
   };
 
   if (loading) return <Loading size="lg" text="Please wait..." />;
-  if (error) {
-    return <ErrorMessage message={error} />;
-  }
+  if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8">Careers</h1>
+      {/* Header */}
+      <div className="relative flex items-center justify-center mb-8">
+        {/* Left: Logo and Label */}
+        <div className="absolute left-0 flex items-center space-x-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="text-gray-600 hover:text-gray-800"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div className="flex items-center space-x-4">
+            <img
+              src={architectsLogo}
+              alt="ARchitects Logo"
+              className="h-12 w-auto"
+            />
+            <div>
+              <h1 className="text-xl font-bold text-blue-600">ARchitects</h1>
+              <p className="text-sm text-gray-600">ATS Streamlining System</p>
+            </div>
+          </div>
+        </div>
 
+        {/* Center: Career Opportunities Title */}
+        <h2 className="text-xl font-bold text-black text-center">
+          Career Opportunities
+        </h2>
+
+        {/* Right: Register Button */}
+        <div className="absolute right-0">
+          <Button
+            onClick={() => navigate("/register")}
+            variant="primary"
+          >
+            Register
+          </Button>
+        </div>
+      </div>
+
+      {/* Job Listings */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {jobs.map((job) => (
           <div
@@ -82,7 +120,8 @@ const CareersPage = () => {
                   {job.jobPosition}
                 </p>
                 <p className="text-gray-600">
-                  <span className="font-medium">Location:</span> {job.location}
+                  <span className="font-medium">Location:</span>{" "}
+                  {job.location}
                 </p>
                 <p className="text-gray-600">
                   <span className="font-medium">Salary:</span>{" "}
@@ -97,6 +136,7 @@ const CareersPage = () => {
                   {new Date(job.applicationEndDate).toLocaleDateString()}
                 </p>
               </div>
+
               <div className="mb-4">
                 <h3 className="font-medium mb-2">Description:</h3>
                 {renderExpandableText(
@@ -105,6 +145,7 @@ const CareersPage = () => {
                   "description"
                 )}
               </div>
+
               <div className="mb-4">
                 <h3 className="font-medium mb-2">Requirements:</h3>
                 {renderExpandableText(
@@ -113,6 +154,7 @@ const CareersPage = () => {
                   "requirements"
                 )}
               </div>
+
               <Button
                 onClick={() => navigate(`/candidate/jobs/${job.jobPostingId}`)}
                 variant="primary"
@@ -121,7 +163,6 @@ const CareersPage = () => {
                 Apply Now
               </Button>
             </div>
-          
           </div>
         ))}
       </div>

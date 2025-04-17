@@ -18,8 +18,13 @@ dotenv.config();
 // Suppress deprecation warnings
 process.env.NODE_NO_WARNINGS = '1';
 
+<<<<<<< HEAD
 export const app = express();
 const port = process.env.PORT || 3001;
+=======
+const app = express();
+ const port = process.env.PORT ||3001 ;
+>>>>>>> pratiksha
 
 // Middleware
 app.use(

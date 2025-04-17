@@ -4,6 +4,7 @@ import Input from '../common/Input';
 import Button from '../common/Button';
 import { register } from '../../services/authService';
 import architectsLogo from '../../assets/architectsLogo.png';
+import { ArrowLeft } from 'lucide-react'; // using lucide-react for icon
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ const RegistrationForm = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'admin'
+    role: 'admin',
   });
 
   const [loading, setLoading] = useState(false);
@@ -21,9 +22,9 @@ const RegistrationForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -51,7 +52,6 @@ const RegistrationForm = () => {
     }
 
     try {
-      
       await register(formData);
       navigate('/login');
     } catch (err) {
@@ -63,8 +63,17 @@ const RegistrationForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-2xl">
-        <div className="flex items-center justify-center space-x-4">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-2xl relative">
+        {/* Back Arrow at Top-Left Corner */}
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-4 text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+        >
+          <ArrowLeft size={20} />
+          <span className="hidden sm:inline text-sm font-medium">Back</span>
+        </button>
+
+        <div className="flex items-center justify-center space-x-4 mt-6">
           <img
             src={architectsLogo}
             alt="ATS Architects Logo"
@@ -171,3 +180,5 @@ const RegistrationForm = () => {
 };
 
 export default RegistrationForm;
+
+

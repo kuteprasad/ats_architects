@@ -110,4 +110,51 @@ export const fetchJobs = async (req, res) => {
   }
 };
 
+export const fetchJob = async (req, res) => {
+  try {
+    const { jobId } = req.params || req.query;
+
+    if (!jobId) {
+      return res.status(400).json({
+        message: "Job ID is required",
+      });
+    }
+
+    const query = `
+      SELECT 
+        "jobPostingId",
+        "jobTitle",
+        "jobDescription",
+        location,
+        "salaryRange",
+        "jobPosition",
+        "postingDate",
+        "applicationEndDate",
+        "jobRequirements"
+      FROM "jobPostings"
+      WHERE "jobPostingId" = $1
+      ORDER BY "postingDate" DESC;
+    `;
+
+    const result = await pool.query(query, [jobId]);
+
+    const formattedJobs = result.rows.map(job => ({
+      ...job,
+      postingDate: job.postingDate ? job.postingDate.toISOString() : null,
+      applicationEndDate: job.applicationEndDate || null
+    }));
+
+    res.status(200).json({
+      success: true,
+      job: formattedJobs,
+    });
+  } catch (error) {
+    console.error("Error in fetchJob:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch job postings",
+      error: error.message,
+    });
+  }
+};
 

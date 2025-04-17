@@ -31,6 +31,7 @@ export const ROLES = {
     ],
     [ROLES.ADMIN]: [
       'job_postings',
+      'candidates_history',
       'schedule_interview',
       'view_applications',
       'view_job_postings',

@@ -5,7 +5,6 @@ import authRoutes from "./routes/authRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
-import candidateRoutes from "./routes/candidateRoutes.js";
 import bodyParser from "body-parser";
 import seedRoutes from "./routes/seedRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
@@ -18,13 +17,8 @@ dotenv.config();
 // Suppress deprecation warnings
 process.env.NODE_NO_WARNINGS = '1';
 
-<<<<<<< HEAD
-export const app = express();
-const port = process.env.PORT || 3001;
-=======
 const app = express();
  const port = process.env.PORT ||3001 ;
->>>>>>> pratiksha
 
 // Middleware
 app.use(
@@ -41,7 +35,6 @@ app.use(express.json());
 
 // Routes
 app.use("/auth", authRoutes);
-app.use("/candidates", candidateRoutes);
 app.use("/jobs", jobRoutes);
 app.use("/interviews", interviewRoutes);
 app.use("/applications", applicationRoutes);
@@ -61,3 +54,4 @@ app.get('/oauth2callback', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+

@@ -18,13 +18,8 @@ dotenv.config();
 // Suppress deprecation warnings
 process.env.NODE_NO_WARNINGS = '1';
 
-<<<<<<< HEAD
-export const app = express();
-const port = process.env.PORT || 3001;
-=======
 const app = express();
- const port = process.env.PORT ||3001 ;
->>>>>>> pratiksha
+const port = process.env.PORT || 3001;
 
 // Middleware
 app.use(
@@ -48,7 +43,6 @@ app.use("/applications", applicationRoutes);
 app.use("/seedDatabase", seedRoutes);
 app.use('/google', googleRoutes);
 app.use('/analytics', analyticsRoutes);
-
 app.get('/oauth2callback', async (req, res) => {
   const { code } = req.query;
   const { tokens } = await oauth2Client.getToken(code);

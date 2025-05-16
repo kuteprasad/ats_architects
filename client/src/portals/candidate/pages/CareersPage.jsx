@@ -97,12 +97,12 @@ const CareersPage = () => {
 
         {/* Right: Register Button */}
         <div className="absolute right-0">
-          <Button
+          {/* <Button
             onClick={() => navigate("/register")}
             variant="primary"
           >
             Register
-          </Button>
+          </Button> */}
         </div>
       </div>
 

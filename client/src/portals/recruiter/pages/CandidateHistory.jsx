@@ -140,34 +140,34 @@ const CandidateHistory = () => {
             </div>
           </div>
 
-          {/* Right Half - Applications */}
-          <div className="col-md-6">
-            {selectedCandidate ? (
-              <div className="bg-white rounded-lg shadow p-4">
-                <h2 className="text-xl font-bold mb-4">{`${selectedCandidate.firstName} ${selectedCandidate.lastName}'s Applications`}</h2>
-                <ul className="space-y-3">
-                  {selectedCandidate.applications && selectedCandidate.applications.length > 0 ? (
-                    selectedCandidate.applications.map((application, idx) => (
-                      <li key={idx} className="p-3 bg-gray-100 rounded-md shadow-sm">
-                        <p className="text-sm text-gray-600">Application ID: {application.applicationId}</p>
-                        <p className="text-sm text-gray-600">Date: {application.applicationDate}</p>
-                        <p className="text-sm text-gray-600">Status: {application.applicationStatus}</p>
-                      </li>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500">No applications available for this candidate.</p>
-                  )}
-                </ul>
-              </div>
-            ) : (
-              <div className="text-gray-500 text-center mt-5">
-                <p>Select a candidate to view their applications.</p>
-              </div>
-            )}
-          </div>
+        {/* Right Half - Applications */}
+        <div className="col-md-6">
+          {selectedCandidate ? (
+            <div className="bg-white rounded-lg shadow p-4">
+              <h2 className="text-xl font-bold mb-4">{`${selectedCandidate.firstName} ${selectedCandidate.lastName}'s Applications`}</h2>
+              <ul className="space-y-3">
+                {selectedCandidate.applications && selectedCandidate.applications.length > 0 ? (
+                  selectedCandidate.applications.map((application, idx) => (
+                    <li key={idx} className="p-3 bg-gray-100 rounded-md shadow-sm">
+                      <p className="text-sm text-gray-600">Application ID: {application.applicationId}</p>
+                      {/* <p className="text-sm text-gray-600">Application For: {application.jobPostingId}</p> */}
+                      <p className="text-sm text-gray-600">Date: {application.applicationDate}</p>
+                      <p className="text-sm text-gray-600">Status: {application.applicationStatus}</p>
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No applications available for this candidate.</p>
+                )}
+              </ul>
+            </div>
+          ) : (
+            <div className="text-gray-500 text-center mt-5">
+              <p>Select a candidate to view their applications.</p>
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

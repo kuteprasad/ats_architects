@@ -133,7 +133,6 @@ export const fetchJob = async (req, res) => {
         "jobRequirements"
       FROM "jobPostings"
       WHERE "jobPostingId" = $1
-      ORDER BY "postingDate" DESC;
     `;
 
     const result = await pool.query(query, [jobId]);

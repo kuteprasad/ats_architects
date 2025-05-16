@@ -390,6 +390,7 @@ const ApplicationsPage = () => {
         </div>
       </div>
     </div>
+    </div>
   );
 };
 

@@ -150,7 +150,6 @@ const CandidateHistory = () => {
                   selectedCandidate.applications.map((application, idx) => (
                     <li key={idx} className="p-3 bg-gray-100 rounded-md shadow-sm">
                       <p className="text-sm text-gray-600">Application ID: {application.applicationId}</p>
-                      {/* <p className="text-sm text-gray-600">Application For: {application.jobPostingId}</p> */}
                       <p className="text-sm text-gray-600">Date: {application.applicationDate}</p>
                       <p className="text-sm text-gray-600">Status: {application.applicationStatus}</p>
                     </li>
@@ -168,6 +167,7 @@ const CandidateHistory = () => {
         </div>
       </div>
     </div>
+  </>
   );
 };
 

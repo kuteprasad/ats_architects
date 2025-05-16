@@ -8,7 +8,7 @@ import applicationRoutes from "./routes/applicationRoutes.js";
 import bodyParser from "body-parser";
 import seedRoutes from "./routes/seedRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
-
+import candidateRoutes from "./routes/candidateRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
 
 dotenv.config();
@@ -35,6 +35,7 @@ app.use(express.json());
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/candidates", candidateRoutes);
 app.use("/jobs", jobRoutes);
 app.use("/interviews", interviewRoutes);
 app.use("/applications", applicationRoutes);

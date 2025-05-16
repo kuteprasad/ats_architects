@@ -12,13 +12,14 @@ import Button from "../../../components/common/Button";
 import ResumeViewer from "../../../components/common/ResumeViewer";
 import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
-import { CalendarIcon } from '@heroicons/react/solid';
+import { CalendarIcon } from "@heroicons/react/solid";
+import architectsLogo from "../../../assets/architectsLogo.png";
 
 const ApplicationsPage = () => {
   const { jobId } = useParams();
   const location = useLocation();
-  const jobTitle = location.state?.jobTitle;
-  const { user } = useAuth();
+  const jobTitle = location.state?.jobTitle || "Job Posting";
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [selectedCandidates, setSelectedCandidates] = useState({});
@@ -33,12 +34,18 @@ const ApplicationsPage = () => {
     maxScore: "100",
     limit: "",
   });
-
-  // Add state for select all
   const [selectAll, setSelectAll] = useState(false);
 
   const canViewApplications = hasPermission(user?.role, "view_applications");
-  const canScheduleInterviews = hasPermission(user?.role, "schedule_interview");
+  const canScheduleInterviews = hasPermission(
+    user?.role,
+    "schedule_interview"
+  );
+
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -49,14 +56,12 @@ const ApplicationsPage = () => {
         setLoading(false);
         return;
       }
-      // return;
 
       try {
         setLoading(true);
         const response = await api.get(`/applications/${jobId}`);
         if (isMounted) {
-          console.log("resp ", response.data);
-          setApplications(response.data.applications);
+          setApplications(response.data.applications || []);
           setError(null);
         }
       } catch (error) {
@@ -67,9 +72,7 @@ const ApplicationsPage = () => {
           setApplications([]);
         }
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     };
 
@@ -87,14 +90,13 @@ const ApplicationsPage = () => {
     }));
   };
 
-  // Add toggle function for select all
   const toggleSelectAll = () => {
     setSelectAll(!selectAll);
-    const newSelectedState = {};
+    const newSelected = {};
     filteredApplications.forEach((app) => {
-      newSelectedState[app.applicationId] = !selectAll;
+      newSelected[app.applicationId] = !selectAll;
     });
-    setSelectedCandidates(newSelectedState);
+    setSelectedCandidates(newSelected);
   };
 
   const handleFilterChange = (e) => {
@@ -122,13 +124,16 @@ const ApplicationsPage = () => {
         const date = new Date(app.applicationDate);
         const score = parseFloat(app.resumeScore);
 
-        // Date range filter
-        if (filters.dateRange.start && date < new Date(filters.dateRange.start))
+        if (
+          filters.dateRange.start &&
+          date < new Date(filters.dateRange.start)
+        )
           return false;
-        if (filters.dateRange.end && date > new Date(filters.dateRange.end))
+        if (
+          filters.dateRange.end &&
+          date > new Date(filters.dateRange.end)
+        )
           return false;
-
-        // Score range filter
         if (filters.minScore && score < parseFloat(filters.minScore))
           return false;
         if (filters.maxScore && score > parseFloat(filters.maxScore))
@@ -145,71 +150,98 @@ const ApplicationsPage = () => {
         start: "",
         end: "",
       },
-      minScore: "",
-      maxScore: "",
+      minScore: "0",
+      maxScore: "100",
       limit: "",
     });
   };
 
   const filteredApplications = applyFilters(applications);
-
-  const selectedCount =
-    Object.values(selectedCandidates).filter(Boolean).length;
+  const selectedCount = Object.values(selectedCandidates).filter(Boolean)
+    .length;
 
   const handleScheduleInterviews = () => {
     const selectedIds = Object.keys(selectedCandidates).filter(
       (id) => selectedCandidates[id]
     );
-
     navigate("/recruiter/interview-schedular", {
       state: { selectedApplications: selectedIds, jobPostingId: jobId },
     });
   };
 
+  const onLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   if (loading) return <Loading size="lg" text="Loading Applications..." />;
-
-  if (error) {
-    return <ErrorMessage message={error} />;
-  }
-
-  if (!canViewApplications) {
-    return <Navigate to="/unauthorized" />;
-  }
+  if (error) return <ErrorMessage message={error} />;
+  if (!canViewApplications) return <Navigate to="/unauthorized" />;
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl ">
-          Applications for <span className="font-bold"> {jobTitle} </span> 
-        </h1>
-    
-
-<div className="flex items-center gap-4">
-  {canScheduleInterviews && (
-    <div className="mt-4 flex justify-end">
-      <Button
-        onClick={handleScheduleInterviews}
-        variant="primary"
-        size="md"
-        disabled={selectedCount === 0}
-      >
-        <div className="flex flex-col items-center">
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5 text-white" />
-            <span>Schedule Interviews</span>
+      {/* Header */}
+      <div className="bg-white shadow sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="text-gray-600 hover:text-gray-800 focus:outline-none"
+              aria-label="Go back"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <img
+              src={architectsLogo}
+              alt="ATS Architects Logo"
+              className="h-12 w-12 rounded-full object-cover"
+            />
+            <h1 className="text-2xl text-right">
+              Applications for <span className="font-bold">{jobTitle}</span>
+            </h1>
           </div>
-          <span className="text-xs font-thin text-white mt-1">
-            Selected: {selectedCount} candidates
-          </span>
+          <Button onClick={onLogout} variant="secondary" size="sm">
+            Logout
+          </Button>
         </div>
-      </Button>
-    </div>
-  )}
-</div>
-
       </div>
 
-      {/* Filter Section */}
+      {/* Schedule Button */}
+      {canScheduleInterviews && (
+        <div className="mt-4 flex justify-end">
+          <Button
+            onClick={handleScheduleInterviews}
+            variant="primary"
+            size="md"
+            disabled={selectedCount === 0}
+          >
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="h-5 w-5 text-white" />
+                <span>Schedule Interviews</span>
+              </div>
+              <span className="text-xs font-thin text-white mt-1">
+                Selected: {selectedCount} candidates
+              </span>
+            </div>
+          </Button>
+        </div>
+      )}
+
+      {/* Filters */}
       <div className="bg-white p-4 mb-6 rounded-lg shadow">
         <h3 className="text-lg font-medium mb-4">Filters</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -232,7 +264,6 @@ const ApplicationsPage = () => {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
-
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Resume Score Range
@@ -254,7 +285,6 @@ const ApplicationsPage = () => {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
-
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Limit Results
@@ -279,88 +309,91 @@ const ApplicationsPage = () => {
         </div>
       </div>
 
+      {/* Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={selectAll}
-                      onChange={toggleSelectAll}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span>Select All</span>
-                  </div>
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Candidate Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Application Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Resume Score
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Resume
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredApplications.map((application, index) => (
-                <tr key={application.applicationId}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <input
-                      type="checkbox"
-                      checked={
-                        selectedCandidates[application.applicationId] || false
-                      }
-                      onChange={() =>
-                        toggleCandidateSelection(application.applicationId)
-                      }
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    /> 
-                    <span className="ml-2   text-sm text-gray-500">
-
-                    {index + 1}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {application.candidateName}
+          {filteredApplications.length === 0 ? (
+            <div className="p-6 text-center text-gray-500">
+              No applications match the current filters.
+            </div>
+          ) : (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={toggleSelectAll}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span>Select All</span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {application.email}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {new Date(
-                        application.applicationDate
-                      ).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {application.resumeScore}
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <ResumeViewer resume={application.resume} />
-                  </td>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Candidate Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Application Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Resume Score
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Resume
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredApplications.map((application, index) => (
+                  <tr key={application.applicationId}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectedCandidates[application.applicationId] || false
+                        }
+                        onChange={() =>
+                          toggleCandidateSelection(application.applicationId)
+                        }
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-500">
+                        {index + 1}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {application.candidateName}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">
+                        {application.email}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">
+                        {formatDate(application.applicationDate)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {application.resumeScore}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <ResumeViewer resume={application.resume} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

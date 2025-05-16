@@ -37,7 +37,9 @@ const InterviewFeedback = ({
   onRatingChange,
   onCommentChange,
   onSubmit,
-  onClose 
+  onClose,
+  onAccept,
+  onReject
 }) => {
   console.log('Current ratings:', ratings); // Debug log
 
@@ -88,9 +90,17 @@ const InterviewFeedback = ({
     onRatingChange('cumulativeScore', cumulativeScore);
   };
 
-  const handleSubmit = () => {
+  const handleAccept = () => {
     if (validateFields()) {
-      onSubmit();
+      alert('Candidate is accepted');
+      onAccept();
+    }
+  };
+
+  const handleReject = () => {
+    if (validateFields()) {
+      alert('Candidate is rejected');
+      onReject();
     }
   };
 
@@ -165,12 +175,15 @@ const InterviewFeedback = ({
           />
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 flex-wrap">
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} variant="primary">
-            Submit Feedback
+          <Button onClick={handleAccept} variant="primary" className="bg-green-600 text-white">
+            Accept
+          </Button>
+          <Button onClick={handleReject} variant="primary" className="bg-red-600 text-white">
+            Reject
           </Button>
         </div>
       </div>

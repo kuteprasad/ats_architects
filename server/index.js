@@ -18,7 +18,7 @@ dotenv.config();
 process.env.NODE_NO_WARNINGS = '1';
 
 const app = express();
- const port = process.env.PORT ||3001 ;
+const port = process.env.PORT ||4000 ;
 
 // Middleware
 app.use(
@@ -54,4 +54,5 @@ app.get('/oauth2callback', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
 

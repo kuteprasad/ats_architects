@@ -235,3 +235,73 @@ JOIN "jobPostings" j ON i."jobPostingId" = j."jobPostingId"`;
     client.release();
   }
 };
+
+export const changeApplicationStatusToAccepted = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+
+    const query = `
+      UPDATE "applications"
+      SET "applicationStatus" = 'Accepted'
+      WHERE "applicationId" = $1
+      RETURNING *
+    `;
+
+    const result = await pool.query(query, [applicationId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Application status updated to Accepted",
+      application: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error updating application status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update application status",
+      error: error.message,
+    });
+  }
+};
+
+export const changeApplicationStatusToRejected = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+
+    const query = `
+      UPDATE "applications"
+      SET "applicationStatus" = 'Rejected'
+      WHERE "applicationId" = $1
+      RETURNING *
+    `;
+
+    const result = await pool.query(query, [applicationId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Application status updated to Rejected",
+      application: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error updating application status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update application status",
+      error: error.message,
+    });
+  }
+};

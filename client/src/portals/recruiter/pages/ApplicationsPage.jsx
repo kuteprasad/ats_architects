@@ -13,6 +13,10 @@ import ResumeViewer from "../../../components/common/ResumeViewer";
 import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
 import { CalendarIcon } from '@heroicons/react/solid';
+import DashboardHeader from "../components/Dashboard/DashboardHeader";
+import { getInitialPermissions, updatePermissions } from "../../../utils/dashboardUtils";
+import architectsLogo from '../../../assets/architectsLogo.png';
+// import { handleLogout } from "../../../utils/logoutUtils";
 
 const ApplicationsPage = () => {
   const { jobId } = useParams();
@@ -33,6 +37,8 @@ const ApplicationsPage = () => {
     maxScore: "100",
     limit: "",
   });
+  const [permissions, setPermissions] = useState(getInitialPermissions());
+  
 
   // Add state for select all
   const [selectAll, setSelectAll] = useState(false);
@@ -42,6 +48,10 @@ const ApplicationsPage = () => {
 
   useEffect(() => {
     let isMounted = true;
+
+    if (user) {
+      setPermissions(updatePermissions(user, hasPermission));
+    }
 
     const fetchApplications = async () => {
       if (!canViewApplications) {
@@ -78,7 +88,7 @@ const ApplicationsPage = () => {
     return () => {
       isMounted = false;
     };
-  }, [jobId, canViewApplications]);
+  }, [jobId, canViewApplications, user]);
 
   const toggleCandidateSelection = (applicationId) => {
     setSelectedCandidates((prev) => ({
@@ -114,6 +124,15 @@ const ApplicationsPage = () => {
         [name]: value,
       },
     }));
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
   const applyFilters = (applications) => {
@@ -178,6 +197,11 @@ const ApplicationsPage = () => {
 
   return (
     <div className="container mx-auto p-6">
+      <DashboardHeader
+              permissions={permissions}
+              architectsLogo={architectsLogo}
+              onLogout={handleLogout}
+            />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl ">
           Applications for <span className="font-bold"> {jobTitle} </span> 

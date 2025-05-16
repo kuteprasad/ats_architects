@@ -1,7 +1,9 @@
-
 import React from 'react';
 
 export const CandidatesList = ({ selectedApplications }) => {
+  
+  console.log(selectedApplications);
+
   return (
     <div className="bg-white p-4 rounded-lg shadow">
       <h2 className="text-lg font-semibold mb-4">Selected Candidates</h2>

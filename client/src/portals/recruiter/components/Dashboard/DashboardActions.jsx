@@ -77,7 +77,7 @@ const DashboardActions = ({
           </Button>
         )}
 
-        {permissions.canSeeCandidateHistory && (
+        {/* {permissions.canSeeCandidateHistory && (
           <Button 
             onClick={onAnalytics} 
             variant="primary" 
@@ -86,7 +86,7 @@ const DashboardActions = ({
           >
             See Candidate History
           </Button>
-        )}
+        )} */}
 
         {permissions.canHaveInterviews && (
           <Button

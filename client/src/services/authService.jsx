@@ -12,7 +12,6 @@ export const loginService = async (email, password) => {
     localStorage.setItem('user', JSON.stringify(response.data.user));
     
 
-
     console.log("response in authservice: ", response.data);
     
     return response.data;

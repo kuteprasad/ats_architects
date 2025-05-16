@@ -15,7 +15,8 @@ export const ROLES = {
       'view_applications',
       'handle_analytics',
       'view_job_postings',
-      'HR-dashboard'
+      'HR-dashboard',
+      'candidate-history'
       // 'seeding_db',
       // 'process_emails',
       // 'score_resumes'
@@ -38,7 +39,8 @@ export const ROLES = {
       'process_emails',
       'handle_analytics',
       'score_resumes',
-      'Recruiter-dashboard'
+      'Recruiter-dashboard',
+      'candidate-history'
       // 'all_permissions'
     ]
   };

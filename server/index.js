@@ -41,7 +41,6 @@ app.use("/applications", applicationRoutes);
 app.use("/seedDatabase", seedRoutes);
 app.use('/google', googleRoutes);
 app.use('/analytics', analyticsRoutes);
-
 app.get('/oauth2callback', async (req, res) => {
   const { code } = req.query;
   const { tokens } = await oauth2Client.getToken(code);

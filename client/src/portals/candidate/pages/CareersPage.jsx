@@ -4,6 +4,7 @@ import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../../components/common/Loading";
 import ErrorMessage from "../../../components/common/ErrorMessage";
+import CareerHeader from "./compenents/CareersPageHeader";
 import { ArrowLeft } from "lucide-react";
 import architectsLogo from "../../../assets/architectsLogo.png";
 

@@ -108,21 +108,21 @@ export const createApplication = async (req, res) => {
 
     // Create application
     const insertQuery = `
-  INSERT INTO applications (
-    "jobPostingId",
-    "candidateId",
-    "applicationDate",
-    "applicationStatus",
-    "resume"
-  )
-  VALUES ($1, $2, CURRENT_TIMESTAMP, 'PENDING', $3);
-`;
+      INSERT INTO applications (
+        "jobPostingId",
+        "candidateId",
+        "applicationDate",
+        "applicationStatus",
+        "resume"
+      )
+      VALUES ($1, $2, CURRENT_TIMESTAMP, 'PENDING', $3);
+      `;
 
     const selectQuery = `
-  SELECT "jobTitle"
-  FROM "jobPostings"
-  WHERE "jobPostingId" = $1;
-`;
+      SELECT "jobTitle"
+        FROM "jobPostings"
+        WHERE "jobPostingId" = $1;
+      `;
 
     // Execute the queries in sequence
     await pool.query(insertQuery, [jobId, candidateId, resume.buffer]);

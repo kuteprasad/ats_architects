@@ -18,9 +18,9 @@ describe('Auth Endpoints', () => {
   // Rest of the test code remains the same
   describe('POST  /auth/register', () => {
     const validUser = {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
+      firstName: 'Pranav',
+      lastName: 'Londhe',
+      email: 'prnav@example.com',
       password: 'password123',
       role: 'interviewer'
     };

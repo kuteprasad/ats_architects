@@ -86,6 +86,8 @@ const InterviewScheduler = () => {
       const selectedInterviewerIds = Object.keys(selectedInterviewers)
         .filter(id => selectedInterviewers[id]);
 
+        console.log("selectedInterviewerIds", selectedInterviewerIds)
+
       if (!selectedInterviewerIds.length) {
         alert('Please select at least one interviewer');
         return;

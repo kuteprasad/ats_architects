@@ -9,6 +9,7 @@ export const getInitialPermissions = () => ({
     canSeeRecuiterDashboard: false,
     canSeeHRDashboard: false,
     canSeeInterviewerDashboard: false,
+    canSeeCandidateHistory: false,
     canCandidatesHistory: false,
   });
   
@@ -22,6 +23,6 @@ export const getInitialPermissions = () => ({
     canSeeRecuiterDashboard: hasPermission(user.role, 'Recruiter-dashboard'),
     canSeeHRDashboard: hasPermission(user.role, 'HR-dashboard'),
     canSeeInterviewerDashboard: hasPermission(user.role, 'interviewer-dashboard'),
+    canSeeCandidateHistory: hasPermission(user.role, 'candidate-history'),
     canCandidatesHistory: hasPermission(user.role, 'candidates_history')
-
   });

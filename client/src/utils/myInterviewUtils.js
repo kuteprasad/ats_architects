@@ -27,27 +27,92 @@ export const getStatusColor = (status) => {
   return colors[status] || 'bg-gray-100 text-gray-800';
 };
 
-export const isInterviewPast = (date, endTime) => {
-  const interviewEnd = new Date(`${date} ${endTime}`);
-  return interviewEnd < new Date();
+// export const isInterviewPast = (date, endTime) => {
+//   try {
+//     // Extract date part if it's in ISO format
+//     const datePart = date.includes('T') ? date.split('T')[0] : date;
+    
+//     // Properly format date and time for consistent parsing
+//     const dateTimeString = `${datePart}T${endTime}`;
+//     const interviewEnd = new Date(dateTimeString);
+    
+//     // Check if the date is valid
+//     if (isNaN(interviewEnd.getTime())) {
+//       console.error('Invalid date created:', dateTimeString);
+//       return false;
+//     }
+    
+//     return interviewEnd < new Date();
+//   } catch (err) {
+//     console.error('Error comparing interview dates:', err);
+//     return false;
+//   }
+// };
+
+export const isInterviewPast = (interview) => {
+  try {
+    // Check if status is ACCEPTED or REJECTED
+    if (interview.status === 'ACCEPTED' || interview.status === 'REJECTED') {
+      return true;
+    }
+
+    // Extract date part if it's in ISO format
+    const datePart = interview.interviewDate.includes('T') 
+      ? interview.interviewDate.split('T')[0] 
+      : interview.interviewDate;
+    
+    // Properly format date and time for consistent parsing
+    const dateTimeString = `${datePart}T${interview.interviewEndTime}`;
+    const interviewEnd = new Date(dateTimeString);
+    
+    // Check if the date is valid
+    if (isNaN(interviewEnd.getTime())) {
+      console.error('Invalid date created:', dateTimeString);
+      return false;
+    }
+    
+    return interviewEnd < new Date();
+  } catch (err) {
+    console.error('Error comparing interview dates:', err);
+    return false;
+  }
 };
+
+// export const filterInterviews = (interviews) => {
+//   const current = interviews.filter(
+//     interview => !isInterviewPast(interview.interviewDate, interview.interviewEndTime)
+//   );
+  
+//   const past = interviews.filter(
+//     interview => isInterviewPast(interview.interviewDate, interview.interviewEndTime)
+//   );
+
+//   return { current, past };
+// };
+
+// export const calculateCumulativeScore = (ratings) => {
+//   return Object.values(ratings)
+//     .filter(score => typeof score === 'number')
+//     .reduce((sum, score) => sum + score, 0);
+// };
 
 export const filterInterviews = (interviews) => {
-  const current = interviews.filter(
-    interview => !isInterviewPast(interview.interviewDate, interview.interviewEndTime)
-  );
-  
-  const past = interviews.filter(
-    interview => isInterviewPast(interview.interviewDate, interview.interviewEndTime)
-  );
+  if (!Array.isArray(interviews) || interviews.length === 0) {
+    return { current: [], past: [] };
+  }
+
+  const current = interviews.filter(interview => !isInterviewPast(interview));
+  const past = interviews.filter(interview => isInterviewPast(interview));
+
+  console.log('Filtering interviews:', {
+    total: interviews.length,
+    current: current.length,
+    past: past.length,
+    currentStatuses: current.map(i => i.status),
+    pastStatuses: past.map(i => i.status)
+  });
 
   return { current, past };
-};
-
-export const calculateCumulativeScore = (ratings) => {
-  return Object.values(ratings)
-    .filter(score => typeof score === 'number')
-    .reduce((sum, score) => sum + score, 0);
 };
 
 export const prepareInterviewFeedback = (interviewId, ratings, comments, userId) => {

@@ -5,8 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import architectsLogo from '../../../assets/architectsLogo.png';
 import Button from '../../../components/common/Button';
 import api from '../../../services/api';
+import DashboardHeader from '../components/Dashboard/DashboardHeader';
+import { useAuth } from "../../../contexts/AuthContext";
 
 const CreatePosting = () => {
+  const { user, logout } = useAuth();
   const [formData, setFormData] = useState({
     jobTitle: '',
     jobDescription: '',
@@ -58,7 +61,22 @@ const CreatePosting = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   return (
+    <>
+    <DashboardHeader
+        permissions={{ canSeeRecuiterDashboard: true }}
+        architectsLogo={architectsLogo}
+        onLogout={handleLogout}
+      />
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-2xl">
         {/* Toast notification */}
@@ -160,6 +178,7 @@ const CreatePosting = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

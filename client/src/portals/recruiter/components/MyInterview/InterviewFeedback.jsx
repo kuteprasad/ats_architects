@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import StarRating from './StarRating';
 import Button from '../../../../components/common/Button';
 import ResumeViewer from '../../../../components/common/ResumeViewer';
+import api from '../../../../services/api';
+import toast from 'react-hot-toast';
+// import React from 'react';
 
 const formatDateTime = (date, time) => {
   try {
@@ -23,23 +26,39 @@ const formatDateTime = (date, time) => {
 
 const InterviewFeedback = ({ 
   interview, 
-  ratings = {
-    communicationScore: 0,
-    technicalScore: 0,
-    experienceScore: 0,
-    problemSolvingScore: 0,
-    culturalFitScore: 0,
-    timeManagementScore: 0,
-    overallScore: 0,
-    cumulativeScore: 0
-  },
-  comments = '',
+  ratings,
+  comments,
   onRatingChange,
   onCommentChange,
   onSubmit,
-  onClose 
+  onClose,
+  onStatusChange
 }) => {
-  console.log('Current ratings:', ratings); // Debug log
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusLoading, setStatusLoading] = useState({
+    accept: false,
+    reject: false
+  });
+
+  const handleStatusChange = async (status) => {
+    try {
+      setStatusLoading(prev => ({
+        ...prev,
+        [status.toLowerCase()]: true
+      }));
+
+      await onStatusChange(interview.applicationId, status);
+      
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast.error('Failed to update application status');
+    } finally {
+      setStatusLoading(prev => ({
+        ...prev,
+        [status.toLowerCase()]: false
+      }));
+    }
+  };
 
   const validateFields = () => {
     if (!comments.trim()) {
@@ -88,9 +107,17 @@ const InterviewFeedback = ({
     onRatingChange('cumulativeScore', cumulativeScore);
   };
 
-  const handleSubmit = () => {
-    if (validateFields()) {
-      onSubmit();
+  const handleSubmit = async () => {
+    if (!validateFields()) return;
+    
+    setIsSubmitting(true);
+    try {
+      await onSubmit();
+      toast.success('Feedback submitted successfully');
+    } catch (error) {
+      toast.error('Failed to submit feedback');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -165,13 +192,47 @@ const InterviewFeedback = ({
           />
         </div>
 
-        <div className="flex justify-end gap-4">
-          <Button onClick={onClose} variant="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} variant="primary">
-            Submit Feedback
-          </Button>
+        <div className="flex justify-between items-center mt-6">
+          <div className="flex gap-4">
+            <Button
+              onClick={() => handleStatusChange('ACCEPTED')}
+              variant="success"
+              disabled={statusLoading.accept || statusLoading.reject || interview.status === 'ACCEPTED'}
+              loading={statusLoading.accept}
+              loadingText="Accepting..."
+              className="bg-green-600 hover:bg-green-700 text-white min-w-[100px]"
+            >
+              {statusLoading.accept ? 'Accepting...' : 'Accept'}
+            </Button>
+            <Button
+              onClick={() => handleStatusChange('REJECTED')}
+              variant="danger"
+              disabled={statusLoading.accept || statusLoading.reject || interview.status === 'REJECTED'}
+              loading={statusLoading.reject}
+              loadingText="Rejecting..."
+              className="bg-red-600 hover:bg-red-700 text-white min-w-[100px]"
+            >
+              {statusLoading.reject ? 'Rejecting...' : 'Reject'}
+            </Button>
+          </div>
+          <div className="flex gap-4">
+            <Button 
+              onClick={onClose} 
+              variant="secondary"
+              disabled={isSubmitting || statusLoading.accept || statusLoading.reject}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSubmit}
+              variant="primary"
+              disabled={isSubmitting}
+              loading={isSubmitting}
+              loadingChildren="Submitting..."
+            >
+              Submit Feedback
+            </Button>
+          </div>
         </div>
       </div>
     </div>

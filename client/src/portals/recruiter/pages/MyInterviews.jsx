@@ -14,6 +14,7 @@ import {
   prepareInterviewFeedback,
   parseInterviewScores
 } from '../../../utils/myInterviewUtils';
+// import { toast } from 'react-toastify';
 
 const MyInterviews = () => {
   const { user } = useAuth();
@@ -24,6 +25,7 @@ const MyInterviews = () => {
   const [selectedInterview, setSelectedInterview] = useState(null);
   const [ratings, setRatings] = useState(DEFAULT_RATINGS);
   const [comments, setComments] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchInterviews();
@@ -43,12 +45,13 @@ const MyInterviews = () => {
 
   const handleRatingSubmit = async (interviewId) => {
     try {
+      setIsSubmitting(true);
       const feedbackData = prepareInterviewFeedback(interviewId, ratings, comments, user.id);
       const response = await api.post('/interviews/feedback', feedbackData);
       console.log('Feedback submitted:', response.data);
       setRatings(DEFAULT_RATINGS);
       setComments('');
-      setSelectedInterview(null);
+      // setSelectedInterview(null);
     } catch (error) {
       console.error('Error submitting feedback:', error);
     }
@@ -59,6 +62,31 @@ const MyInterviews = () => {
     const newRatings = parseInterviewScores(interview);
     setRatings(newRatings);
     setComments(interview.comments || '');
+  };
+
+  const handleStatusChange = async (applicationId, newStatus) => {
+    try {
+      const endpoint = newStatus === 'ACCEPTED' 
+        ? `/interviews/applications/${applicationId}/accept`
+        : `/interviews/applications/${applicationId}/reject`;
+
+      const response = await api.patch(endpoint);
+      
+      if (response.data.success) {
+        // Update local state
+        setInterviews(prevInterviews => 
+          prevInterviews.map(interview => 
+            interview.applicationId === applicationId
+              ? { ...interview, status: newStatus }
+              : interview
+          )
+        );
+        toast.success(`Application ${newStatus.toLowerCase()} successfully`);
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast.error('Failed to update application status');
+    }
   };
 
   if (loading) return <Loading size="lg" text="Loading Interviews ..." />;
@@ -101,6 +129,7 @@ const MyInterviews = () => {
               onCommentChange={(e) => setComments(e.target.value)}
               onSubmit={() => handleRatingSubmit(selectedInterview.interviewId)}
               onClose={() => setSelectedInterview(null)}
+              onStatusChange={handleStatusChange}
             />
           )}
         </div>

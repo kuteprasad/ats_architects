@@ -8,13 +8,15 @@ import { useNavigate } from "react-router-dom";
 import architectsLogo from '../../../assets/architectsLogo.png';
 import Button from "../../../components/common/Button";
 import DashboardHeader from '../components/Dashboard/DashboardHeader';
-import { hasPermission } from "../../../utils/permissions";
 
 const CandidateHistory = () => {
   const [candidateHistory, setCandidateHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const { user, logout } = useAuth();
+
+  const navigate = useNavigate();
 
   const handleViewApplications = (candidateId) => {
     const candidate = candidateHistory.find((c) => c.candidateId === candidateId);

@@ -90,11 +90,11 @@ export const isInterviewPast = (interview) => {
 //   return { current, past };
 // };
 
-// export const calculateCumulativeScore = (ratings) => {
-//   return Object.values(ratings)
-//     .filter(score => typeof score === 'number')
-//     .reduce((sum, score) => sum + score, 0);
-// };
+export const calculateCumulativeScore = (ratings) => {
+  return Object.values(ratings)
+    .filter(score => typeof score === 'number')
+    .reduce((sum, score) => sum + score, 0);
+};
 
 export const filterInterviews = (interviews) => {
   if (!Array.isArray(interviews) || interviews.length === 0) {

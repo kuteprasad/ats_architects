@@ -242,7 +242,7 @@ export const changeApplicationStatusToAccepted = async (req, res) => {
 
     const query = `
       UPDATE "applications"
-      SET "applicationStatus" = 'Accepted'
+      SET "applicationStatus" = 'ACCEPTED'
       WHERE "applicationId" = $1
       RETURNING *
     `;
@@ -277,7 +277,7 @@ export const changeApplicationStatusToRejected = async (req, res) => {
 
     const query = `
       UPDATE "applications"
-      SET "applicationStatus" = 'Rejected'
+      SET "applicationStatus" = 'REJECTED'
       WHERE "applicationId" = $1
       RETURNING *
     `;

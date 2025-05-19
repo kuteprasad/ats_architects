@@ -54,7 +54,7 @@ export const isInterviewPast = (interview) => {
     // Check if status is ACCEPTED or REJECTED
     if (interview.status === 'ACCEPTED' || interview.status === 'REJECTED') {
       return true;
-    }
+    };
 
     // Extract date part if it's in ISO format
     const datePart = interview.interviewDate.includes('T') 

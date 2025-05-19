@@ -5,11 +5,10 @@ import authRoutes from "./routes/authRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
-import candidateRoutes from "./routes/candidateRoutes.js";
 import bodyParser from "body-parser";
 import seedRoutes from "./routes/seedRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
-
+import candidateRoutes from "./routes/candidateRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
 
 dotenv.config();
@@ -19,7 +18,7 @@ dotenv.config();
 process.env.NODE_NO_WARNINGS = '1';
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT ||4000 ;
 
 // Middleware
 app.use(
@@ -55,3 +54,5 @@ app.get('/oauth2callback', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+

@@ -19,9 +19,12 @@ import {
   formatEmailData 
 } from '../../../utils/InterviewSchedularUtils';
 import { toast } from 'react-hot-toast';
+import architectsLogo from '../../../assets/architectsLogo.png';
+import { useNavigate } from 'react-router-dom';
 
 const InterviewScheduler = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [interviewers, setInterviewers] = useState([]);
   const [selectedInterviewers, setSelectedInterviewers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -54,8 +57,9 @@ const InterviewScheduler = () => {
         const fetchedInterviewers = response.data.interviewers;
         setInterviewers(fetchedInterviewers);
         
+        // Initialize all interviewers as unselected
         const initialSelected = fetchedInterviewers.reduce((acc, interviewer) => {
-          acc[interviewer.id] = true;
+          acc[interviewer.id] = false; // Changed from true to false
           return acc;
         }, {});
         setSelectedInterviewers(initialSelected);
@@ -164,7 +168,39 @@ const InterviewScheduler = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Schedule Interviews</h1>
+      {/* Header */}
+      <div className="bg-white shadow sticky top-0 mb-5 z-50 rounded-lg mx-auto">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="text-gray-600 hover:text-gray-800 focus:outline-none"
+              aria-label="Go back"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <img
+              src={architectsLogo}
+              alt="ATS Architects Logo"
+              className="h-12 w-12 rounded-full object-cover"
+            />
+            <h1 className="text-2xl font-bold">Schedule Interviews</h1>
+          </div>
+        </div>
+      </div>
       
       <div className="grid grid-cols-2 gap-6">
         <InterviewersList 

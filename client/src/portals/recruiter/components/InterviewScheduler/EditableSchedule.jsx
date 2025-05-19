@@ -12,14 +12,28 @@ export const EditableSchedule = ({
         <h3 className="text-lg font-semibold mb-4">Edit Schedule</h3>
         {editableSchedule.map((day, dayIndex) => (
           <div key={dayIndex} className="mb-6">
-            <h4 className="font-medium mb-2">
-              {day.date.toLocaleDateString()}
-            </h4>
             <div className="space-y-2">
               {day.interviews.map((interview, interviewIndex) => (
                 <div key={interviewIndex} className="flex flex-col border p-3 rounded">
                   <div className="flex items-center justify-between">
-                    <div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="date"
+                        value={interview.startTime.toISOString().split('T')[0]}
+                        onChange={e => {
+                          const newDate = new Date(e.target.value);
+                          const currentTime = interview.startTime;
+                          newDate.setHours(
+                            currentTime.getHours(),
+                            currentTime.getMinutes()
+                          );
+                          handleScheduleEdit(dayIndex, interviewIndex, {
+                            ...interview,
+                            startTime: newDate
+                          });
+                        }}
+                        className="border rounded p-2"
+                      />
                       <input
                         type="time"
                         value={interview.startTime.toTimeString().slice(0,5)}
@@ -40,7 +54,7 @@ export const EditableSchedule = ({
                           ...interview,
                           interviewer: e.target.value
                         })}
-                        className="ml-2 border rounded p-1"
+                        className="border rounded p-1"
                       >
                         {interviewers.map(int => (
                           <option key={int.id} value={int.id}>
@@ -48,7 +62,7 @@ export const EditableSchedule = ({
                           </option>
                         ))}
                       </select>
-                      <span className="ml-2">Candidate: {interview.candidate}</span>
+                      <span>Application: {interview.candidate}</span>
                     </div>
                   </div>
                   <div className="mt-2 text-sm">
@@ -78,14 +92,10 @@ export const EditableSchedule = ({
         ))}
         
         <div className="mt-4 flex justify-end">
-          <Button
-            onClick={onConfirm}
-            variant="primary"
-          >
+          <Button onClick={onConfirm} variant="primary">
             Confirm Schedule
           </Button>
         </div>
       </div>
     );
   };
-  

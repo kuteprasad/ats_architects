@@ -3,6 +3,6 @@ import { getCandidates } from '../controllers/candidateController.js';
 
 const router = express.Router();
 
-router.get('/', getCandidates );
+router.get('/', getCandidates);
 
 export default router;

@@ -5,15 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "cd server &&  npm run dev",
-    "client": "cd client &&  npm run dev",
-    "fastapi": "cd fastApi && source .venv/Scripts/activate && fastapi dev main.py",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "fastapi": "cd fastApi && source .venv/Scripts/activate && uvicorn main:app --reload",
     "dev": "concurrently -k \"npm run server\" \"npm run client\"",
-    "fastapi-sh": "cd fastApi && .venv\\Scripts\\Activate  && fastapi dev main.py",
+    "fastapi-sh": "cd fastApi && .venv\\Scripts\\Activate && uvicorn main:app --reload",
     "devs": "concurrently -k \"npm run server\" \"npm run client\" \"npm run fastapi-sh\"",
-    "fastapi-mac": "cd fastapi && source .venv/bin/activate && fastapi dev main.py",
-    "devm": "concurrently -k \"npm run server\" \"npm run client\" ",
-    "installModules": "npm i && cd server && npm i && cd ../client && npm i"
+    "fastapi-mac": "cd fastapi && source .venv/bin/activate && uvicorn main:app --reload",
+    "devm": "concurrently -k \"npm run server\" \"npm run client\"",
+    "installModules": "npm install && cd server && npm install && cd ../client && npm install"
   },
   "repository": {
     "type": "git",
@@ -26,9 +26,9 @@
   },
   "homepage": "https://github.com/kuteprasad/ats_architects#readme",
   "dependencies": {
-    "concurrently": "^9.1.0",
     "@google-cloud/local-auth": "^3.0.1",
     "@google/generative-ai": "^0.21.0",
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.7.9",
     "body-parser": "^1.20.3",
     "chart.js": "^4.4.7",
@@ -38,6 +38,8 @@
     "googleapis": "^144.0.0",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.9",
+    "react-chartjs-2": "^5.2.0",
+    "react-icons": "^5.4.0",
     "sucrase": "^3.35.0",
     "ts-interface-checker": "^1.0.2"
   },

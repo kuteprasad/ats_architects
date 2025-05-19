@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import InterviewList from './InterviewList';
+import PastinterviewList from './PastinterviewList';
 
 const PastInterviews = ({ interviews, showPast, onToggle, onSelect, getStatusColor }) => {
   return (
@@ -15,7 +16,7 @@ const PastInterviews = ({ interviews, showPast, onToggle, onSelect, getStatusCol
 
       {showPast && (
         <div className="mt-4">
-          <InterviewList 
+          <PastinterviewList 
             interviews={interviews}
             onSelect={onSelect}
             getStatusColor={getStatusColor}

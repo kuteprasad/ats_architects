@@ -197,39 +197,62 @@ const ApplicationsPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <DashboardHeader
-              permissions={permissions}
-              architectsLogo={architectsLogo}
-              onLogout={handleLogout}
+      {/* Header */}
+      <div className="bg-white shadow sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="text-gray-600 hover:text-gray-800 focus:outline-none"
+              aria-label="Go back"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <img
+              src={architectsLogo}
+              alt="ATS Architects Logo"
+              className="h-12 w-12 rounded-full object-cover"
             />
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl ">
-          Applications for <span className="font-bold"> {jobTitle} </span> 
-        </h1>
-    
-
-<div className="flex items-center gap-4">
-  {canScheduleInterviews && (
-    <div className="mt-4 flex justify-end">
-      <Button
-        onClick={handleScheduleInterviews}
-        variant="primary"
-        size="md"
-        disabled={selectedCount === 0}
-      >
-        <div className="flex flex-col items-center">
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5 text-white" />
-            <span>Schedule Interviews</span>
+            <h1 className="text-2xl font-bold">Applications for <span className="font-bold"> {jobTitle} </span></h1>
           </div>
-          <span className="text-xs font-thin text-white mt-1">
-            Selected: {selectedCount} candidates
-          </span>
+          <div className="flex items-center gap-4">
+            {canScheduleInterviews && (
+              <div className="mt-4 flex justify-end">
+                <Button
+                  onClick={handleScheduleInterviews}
+                  variant="primary"
+                  size="md"
+                  disabled={selectedCount === 0}
+                >
+                  <div className="flex flex-col items-center">
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="h-5 w-5 text-white" />
+                      <span>Schedule Interviews</span>
+                    </div>
+                    <span className="text-xs font-thin text-white mt-1">
+                      Selected: {selectedCount} candidates
+                    </span>
+                  </div>
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-      </Button>
-    </div>
-  )}
-</div>
+      </div>
+      <div className="flex justify-between items-center mb-6">
 
       </div>
 

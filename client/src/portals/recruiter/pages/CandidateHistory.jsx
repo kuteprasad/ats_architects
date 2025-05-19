@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import toast from "react-hot-toast";
 import Loading from "../../../components/common/Loading";
-import { X } from "lucide-react"; // Import X icon for close button
+import { X } from "lucide-react";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 import architectsLogo from '../../../assets/architectsLogo.png';
 import Button from "../../../components/common/Button";
 import DashboardHeader from '../components/Dashboard/DashboardHeader';
@@ -31,11 +31,11 @@ const CandidateHistory = () => {
 
   const fetchCandidateHistory = async () => {
     try {
-      const response = await api.get("/candidates");
+      const response = await api.get('/candidates');
       setCandidateHistory(response.data);
     } catch (error) {
       console.error("Error fetching candidate history:", error);
-      toast.error(`Unable to get Candidate Data`, {
+      toast.error("Unable to get Candidate Data", {
         duration: 5000,
         position: "top-right",
       });
@@ -58,14 +58,46 @@ const CandidateHistory = () => {
   }, []);
 
   if (loading) return <Loading size="lg" text="Fetching Candidates ..." />;
+  if (loading) return <Loading size="lg" text="Fetching Candidates ..." />;
 
   return (
     <>
-    <DashboardHeader
-        permissions={{ canSeeRecuiterDashboard: true }}
-        architectsLogo={architectsLogo}
-        onLogout={handleLogout}
-      />
+      {/* Header */}
+      <div className="bg-white shadow sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="text-gray-600 hover:text-gray-800 focus:outline-none"
+              aria-label="Go back"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <img
+              src={architectsLogo}
+              alt="ATS Architects Logo"
+              className="h-12 w-12 rounded-full object-cover"
+            />
+            <h1 className="text-2xl font-bold">Candidate History</h1>
+          </div>
+          <Button onClick={handleLogout} variant="secondary" size="sm">
+            Logout
+          </Button>
+        </div>
+      </div>
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* <h1 className="text-3xl font-bold text-gray-900 mb-8">Candidate History</h1> */}
